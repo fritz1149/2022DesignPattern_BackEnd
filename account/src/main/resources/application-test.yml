@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: account
+  datasource:
+    url: jdbc:mysql://47.94.225.40:3306/im?serverTimezone=GMT
+    username: MS
+    password: XZRyNBkzea6iKHPA
+  redis:
+    host: 47.94.225.40
+    port: 6379
+    password: 20011013cc
+    timeout: 3000
+    jedis:
+      pool:
+        min-idle: 0
+        max-idle: 8
+        max-active: 8
+        max-wait: -1
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+      config:
+        server-addr: localhost:8848
+        file-extension: yaml
+server:
+  port: 8001
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+sa-token:
+  is-concurrent: false
+
+mybatis:
+  mapper-locations: classpath:mapping/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
