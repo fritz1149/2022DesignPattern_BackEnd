@@ -1,8 +1,10 @@
 package com.dp.account.controller;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
 import com.dp.account.service.UserService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,16 +15,26 @@ public class AccountController {
 
     @GetMapping("/hello")
     public String hello(){
-        return "hello";
+        String ret = "hello\n";
+        Boolean isLogin = StpUtil.isLogin();
+        ret += "\nisLogin: " + isLogin;
+        if(isLogin)
+            ret += "\nuserId: " + StpUtil.getLoginId();
+        return ret;
+    }
+    @ApiOperation("携带token才能登出")
+    @PostMapping("/logout")
+    public SaResult logout(){
+        StpUtil.logout();
+        return SaResult.ok();
     }
 
     @PostMapping("/login")
     public SaResult login(@RequestParam Long userId, @RequestParam String password){
         switch (userService.loginCheck(userId, password)){
             case LOGIN_OK:
-                String device = StpUtil.getLoginDevice();
-                StpUtil.login(userId, device);
-                String token = StpUtil.getTokenValueByLoginId(userId, device);
+                StpUtil.login(userId, "PC");
+                String token = StpUtil.getTokenValueByLoginId(userId, "PC");
                 return new SaResult(200, "登陆成功", token);
             case USER_NOT_FOUND:
                 return new SaResult(403, "用户不存在", null);
@@ -43,9 +55,4 @@ public class AccountController {
         }
     }
 
-    @PostMapping("/logout")
-    public SaResult logout(@RequestParam Long userId){
-        StpUtil.logout(userId);
-        return SaResult.ok();
-    }
 }

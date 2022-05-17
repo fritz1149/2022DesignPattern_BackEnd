@@ -1,27 +1,18 @@
 spring:
-  application:
-    name: gateway
   cloud:
-    gateway:
-      routes:
-        - id: account
-          uri: lb://account
-          predicates:
-            - Path=/account/**
-          filters:
-            - StripPrefix=1
-
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: '*'
-            allowedHeaders: '*'
-            allowedMethods: '*'
     nacos:
       discovery:
         server-addr: 192.168.15.43:8848
       config:
         server-addr: 192.168.15.43:8848
         file-extension: yaml
-server:
-  port: 4396
+  redis:
+    host: 192.168.2.221
+    port: 6379
+    timeout: 3000
+    jedis:
+      pool:
+        min-idle: 0
+        max-idle: 8
+        max-active: 8
+        max-wait: -1

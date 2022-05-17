@@ -1,6 +1,11 @@
 spring:
-  application:
-    name: account
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.15.43:8848
+      config:
+        server-addr: 192.168.15.43:8848
+        file-extension: yaml
   datasource:
     url: jdbc:mysql://192.168.0.162/im?serverTimezone=GMT
     username: root
@@ -15,26 +20,3 @@ spring:
         max-idle: 8
         max-active: 8
         max-wait: -1
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 192.168.15.43:8848
-      config:
-        server-addr: 192.168.15.43:8848
-        file-extension: yaml
-server:
-  port: 8001
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-
-sa-token:
-  is-concurrent: false
-
-mybatis:
-  mapper-locations: classpath:mapping/*.xml
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

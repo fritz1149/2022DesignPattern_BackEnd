@@ -1,3 +1,23 @@
 spring:
+  application:
+    name: account
   profiles:
     active: "@profiles.active@"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+server:
+  port: 8001
+
+sa-token:
+  token-name: token
+  is-concurrent: false
+  is-log: true
+
+mybatis:
+  mapper-locations: classpath:mapping/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
