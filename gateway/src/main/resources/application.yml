@@ -3,9 +3,11 @@ spring:
   application:
     name: gateway
   profiles:
-    active: "@profiles.active@"
+    active: ${profiles.active}
   cloud:
     gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
       routes:
         - id: account
           uri: lb://account
@@ -13,12 +15,12 @@ spring:
             - Path=/account/**
           filters:
             - StripPrefix=1
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: '*'
-            allowedHeaders: '*'
-            allowedMethods: '*'
+        - id: ws
+          uri: lb://connection
+          predicates:
+            - Path=/ws/**
+          filters:
+            - RemoveRequestHeader=Sec-WebSocket-Protocol
 
 sa-token:
   token-name: token
@@ -26,4 +28,4 @@ sa-token:
   is-log: true
 
 server:
-  port: 4396
+  port: ${SERVER_PORT}

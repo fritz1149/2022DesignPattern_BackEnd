@@ -2,15 +2,10 @@ spring:
   application:
     name: account
   profiles:
-    active: "@profiles.active@"
+    active: ${profiles.active}
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
 server:
-  port: 8001
+  port: ${SERVER_PORT}
 
 sa-token:
   token-name: token
