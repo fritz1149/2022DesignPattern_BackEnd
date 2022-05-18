@@ -2,7 +2,7 @@ spring:
   application:
     name: account
   profiles:
-    active: ${profiles.active}
+    active: ${profiles.active:prod}
 
 server:
   port: ${SERVER_PORT}

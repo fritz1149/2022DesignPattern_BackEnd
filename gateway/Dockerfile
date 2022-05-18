@@ -3,6 +3,6 @@ FROM java:8
 VOLUME /tmp
 COPY target/gateway-0.0.1-SNAPSHOT.jar /service.jar
 #暴露端口
-EXPOSE 4396
+EXPOSE ${SERVER_PORT}
 #执行命令java  -jar
 ENTRYPOINT ["java","-jar","/service.jar"]
