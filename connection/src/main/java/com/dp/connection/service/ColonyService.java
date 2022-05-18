@@ -17,7 +17,7 @@ public class ColonyService {
     private RestTemplate restTemplate = new RestTemplate();
     @Value("${socket-address}")
     private String selfAddress;
-
+//分支检测
     public void recordConnect(Long userId){
         redisTemplate.opsForValue().set("socket" + userId, selfAddress);
     }
