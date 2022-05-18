@@ -3,10 +3,7 @@ package com.dp.connection.controller;
 import com.dp.connection.entity.Message;
 import com.dp.connection.service.WebsocketService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class WebsocketController {
@@ -16,7 +13,8 @@ public class WebsocketController {
         return WebsocketService.distributeInfo(content, receiverId).toString();
     }
     @PostMapping("/disconnect")
-    public String disconnect(Long userId){
+    public String disconnect(@RequestParam Long userId){
+        System.out.println("prepare to kick out " + userId);
         return WebsocketService.disconnect(userId).toString();
     }
 }

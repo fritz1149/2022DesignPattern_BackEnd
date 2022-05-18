@@ -42,14 +42,8 @@ public class WebsocketService {
         System.out.println("session close. online: " + onlineCount + " userId: " + userId);
         colonyService.deleteConnect(userId);
     }
-    public Boolean close(){
-        try {
-            session.close();
-            return true;
-        }catch (IOException e){
-            System.out.println("关连接失败了");
-            return false;
-        }
+    public void close() throws IOException{
+        session.close();
     }
     @OnMessage
     public void onMessage(String msg){
@@ -80,10 +74,18 @@ public class WebsocketService {
     }
 
     public static State disconnect(Long userId){
-        if (webSocketServices.containsKey(userId)) {
-            if(webSocketServices.get(userId).close())
-                return State.OK;
+        if(userId == null)
             return State.ERROR;
+        if (webSocketServices.containsKey(userId)) {
+            WebsocketService ws = webSocketServices.get(userId);
+            try{
+                ws.sendInfo("您的账号刚刚在另一台设备上登录，因此断开连接");
+                ws.close();
+                return State.OK;
+            }catch (IOException e){
+                e.printStackTrace();
+                return State.ERROR;
+            }
         }
         else{
             MultiValueMap<String, Object> params = new LinkedMultiValueMap<String, Object>();
