@@ -1,0 +1,27 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+      config:
+        server-addr: localhost:8848
+        file-extension: yaml
+  redis:
+    host: 47.94.225.40
+    port: 6379
+    password: 20011013cc
+    timeout: 3000
+    jedis:
+      pool:
+        min-idle: 0
+        max-idle: 8
+        max-active: 8
+        max-wait: -1
+  data:
+    mongodb:
+      database: IM
+      host: 47.94.225.40
+      port: 27017
+      username: admin
+      password: admin
+      authentication-database: admin

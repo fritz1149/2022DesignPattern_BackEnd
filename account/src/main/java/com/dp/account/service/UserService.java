@@ -3,7 +3,9 @@ package com.dp.account.service;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import com.dp.account.dao.UserMapper;
 import com.dp.account.entity.User;
+import com.dp.common.Name;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import  java.security.SecureRandom;
 
@@ -11,6 +13,8 @@ import  java.security.SecureRandom;
 public class UserService{
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    RedisTemplate redisTemplate;
     public enum LoginState{
         LOGIN_OK, USER_NOT_FOUND, PWD_ERROR
     }
@@ -29,7 +33,12 @@ public class UserService{
         password = SaSecureUtil.md5BySalt(password, salt);
         User user = new User(userName, password, salt);
         userMapper.addUser(user);
-        return user.getUserId();
+
+        Long userId = user.getUserId();
+        redisTemplate.opsForValue().set(Name.lastId(userId), "-1");
+        redisTemplate.opsForValue().set(Name.stateName(userId), "consistent");
+
+        return userId;
     }
 
     private String generateSalt(){

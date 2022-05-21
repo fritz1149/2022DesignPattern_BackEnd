@@ -12,7 +12,7 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import com.dp.common.Enum.State;
 @Service
 @ServerEndpoint("/ws/{userId}")
 public class WebsocketService {
@@ -48,13 +48,11 @@ public class WebsocketService {
     @OnMessage
     public void onMessage(String msg){
         System.out.println("get msg from " + userId + ": " + msg);
+        colonyService.sendToChat(msg);
     }
 
     public void sendInfo(Object data) throws IOException{
         session.getBasicRemote().sendText(JSONObject.toJSONString(data));
-    }
-    public enum State {
-        OK, FORWARD_OK, USER_NOT_FOUND, ERROR
     }
     public static State distributeInfo(Object data, Long receiverId){
         try {
@@ -78,6 +76,7 @@ public class WebsocketService {
             return State.ERROR;
         if (webSocketServices.containsKey(userId)) {
             WebsocketService ws = webSocketServices.get(userId);
+            webSocketServices.remove(userId);
             try{
                 ws.sendInfo("您的账号刚刚在另一台设备上登录，因此断开连接");
                 ws.close();

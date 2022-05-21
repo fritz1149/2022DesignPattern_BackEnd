@@ -12,6 +12,8 @@
         <module>account</module>
         <module>gateway</module>
         <module>connection</module>
+        <module>chat</module>
+        <module>common</module>
     </modules>
     <groupId>com.dp</groupId>
     <artifactId>im</artifactId>
