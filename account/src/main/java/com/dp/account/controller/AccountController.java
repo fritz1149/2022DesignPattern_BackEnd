@@ -1,7 +1,5 @@
 package com.dp.account.controller;
 
-import cn.dev33.satoken.exception.NotLoginException;
-import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
 import com.dp.account.service.UserService;
@@ -15,24 +13,25 @@ public class AccountController {
     UserService userService;
 
     @GetMapping("/hello")
-    public String hello(){
+    public String hello() {
         String ret = "hello\n";
         Boolean isLogin = StpUtil.isLogin();
         ret += "\nisLogin: " + isLogin;
-        if(isLogin)
+        if (isLogin)
             ret += "\nuserId: " + StpUtil.getLoginId();
         return ret;
     }
+
     @ApiOperation("携带token才能登出")
     @PostMapping("/logout")
-    public SaResult logout(){
+    public SaResult logout() {
         StpUtil.logout();
         return SaResult.ok();
     }
 
     @PostMapping("/login")
-    public SaResult login(@RequestParam Long userId, @RequestParam String password){
-        switch (userService.loginCheck(userId, password)){
+    public SaResult login(@RequestParam Long userId, @RequestParam String password) {
+        switch (userService.loginCheck(userId, password)) {
             case LOGIN_OK:
                 StpUtil.login(userId, "PC");
                 String token = StpUtil.getTokenValueByLoginId(userId, "PC");
@@ -45,12 +44,13 @@ public class AccountController {
                 return SaResult.error("不应该出现的错误，请殴打后端同学");
         }
     }
+
     @PostMapping("/register")
-    public SaResult register(@RequestParam String userName, @RequestParam String password){
-        try{
+    public SaResult register(@RequestParam String userName, @RequestParam String password) {
+        try {
             Long userId = userService.register(userName, password);
             return new SaResult(200, "注册成功", userId);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return SaResult.error("后端寄了");
         }

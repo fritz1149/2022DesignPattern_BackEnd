@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://81.70.70.110:3306/im?serverTimezone=GMT
+    username: root
+    password: 123456
+  #    url: jdbc:mysql://82.156.59.244:3306/mytest?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+  #    username: mytest
+  #    password: S6zs7KzMCJjsR6ys
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+mybatis:
+  mapper-locations: classpath:mapping/*.xml
+  type-aliases-package: com.example.demo.entity

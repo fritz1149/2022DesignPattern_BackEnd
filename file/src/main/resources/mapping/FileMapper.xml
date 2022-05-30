@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dp.file.dao.FilesMapper">
+    <resultMap id="fileMap" type="com.dp.file.entity.MyFile">
+        <id column="id" property="id"/>
+        <result column="fromUserId" property="fromUserId"/>
+        <result column="realName" property="realName"/>
+        <result column="savedPath" property="savedPath"/>
+        <result column="createTime" property="createTime"/>
+        <result column="size" property="size"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+</mapper>
