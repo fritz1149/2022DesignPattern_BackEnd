@@ -26,14 +26,20 @@ public class FileLogAspect {
     public void doBefore(JoinPoint joinPoint) throws Throwable {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
-        logger.info("{}  {}  {}  {}", request.getMethod(), request.getRequestURL().toString(), new Gson().toJson(joinPoint.getArgs()), request.getRemoteAddr());
+        String args = new Gson().toJson(joinPoint.getArgs());
+        logger.info("{}  {}  {}  {}", request.getMethod(), request.getRequestURL().toString(), args, request.getRemoteAddr());
     }
 
 
     @Around("fileLog()")
     public Object doAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         Object result = proceedingJoinPoint.proceed();
-        logger.info("Response Args  : {}", new Gson().toJson(result));
+        if (proceedingJoinPoint.getSignature().getName().equals("downloadFile")) {
+            System.out.println(result);
+        } else {
+            String response = new Gson().toJson(result);
+            logger.info("Response Args  : {}", response);
+        }
         return result;
     }
 }
