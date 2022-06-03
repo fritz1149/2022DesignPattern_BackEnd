@@ -16,3 +16,5 @@ spring:
         max-idle: 8
         max-active: 8
         max-wait: -1
+
+allow-origins: ${ALLOW_ORIGINS}

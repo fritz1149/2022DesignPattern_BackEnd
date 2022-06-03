@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: chat
+  profiles:
+    active: ${profiles.active:prod}
+
+server:
+  port: ${SERVER_PORT}
+
+socket-address: ${SOCKET_ADDRESS}

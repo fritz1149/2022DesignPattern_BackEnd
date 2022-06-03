@@ -11,7 +11,9 @@
     <modules>
         <module>account</module>
         <module>gateway</module>
-        <module>file</module>
+        <module>connection</module>
+        <module>chat</module>
+        <module>common</module>
     </modules>
     <groupId>com.dp</groupId>
     <artifactId>im</artifactId>
@@ -69,6 +71,11 @@
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-dao-redis-jackson</artifactId>
                 <version>1.30.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-boot-starter</artifactId>
+                <version>3.0.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
