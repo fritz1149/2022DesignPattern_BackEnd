@@ -21,6 +21,12 @@ spring:
             - Path=/ws/**
           filters:
             - RemoveRequestHeader=Sec-WebSocket-Protocol
+        - id: file
+          uri: lb://file
+          predicates:
+            - Path=/file/**
+          filters:
+            - StripPrefix=1
 
 sa-token:
   token-name: token

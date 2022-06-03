@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/file")
+//@RequestMapping("/file")
 public class FileController {
     @Autowired
     FileService fileService;

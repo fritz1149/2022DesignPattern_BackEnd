@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:mysql://47.94.225.40:3306/im?serverTimezone=GMT
+    username: MS
+    password: XZRyNBkzea6iKHPA
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+      config:
+        server-addr: localhost:8848
+        file-extension: yaml

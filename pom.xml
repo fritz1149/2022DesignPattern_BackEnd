@@ -14,6 +14,7 @@
         <module>connection</module>
         <module>chat</module>
         <module>common</module>
+        <module>file</module>
     </modules>
     <groupId>com.dp</groupId>
     <artifactId>im</artifactId>
