@@ -56,7 +56,9 @@ public class SaTokenConfig {
                         if(!userId.toString().equals(SaHolder.getRequest().getRequestPath().substring(4)))
                             throw NotLoginException.newInstance("token所属id与欲建立连接的id不同", "-2", token);
                     });
-                    SaRouter.match("/**").notMatch("/account/**").notMatch("/ws/**").check(r -> StpUtil.checkLogin());
+                    SaRouter.match("/**").
+                            notMatch("/**/swagger-ui/**").notMatch("/**/swagger-resources/**").notMatch("/**/v2/**").
+                            notMatch("/account/**").notMatch("/ws/**").check(r -> StpUtil.checkLogin());
                 })
                 // 指定[异常处理函数]：每次[认证函数]发生异常时执行此函数
                 .setError(e -> {

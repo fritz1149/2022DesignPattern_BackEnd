@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dp.chat.dao.GroupMapper">
+    <resultMap id="groupMap" type="com.dp.chat.entity.Group">
+        <id column="id" property="groupId"/>
+        <result column="name" property="groupName"/>
+        <result column="avatar" property="avatar"/>
+    </resultMap>
+
+    <insert id="addGroup" useGeneratedKeys="true" keyProperty="groupId">
+        insert into `group`(name)
+        values(#{group.groupName})
+    </insert>
+
+    <insert id="addMember">
+        insert into member(userId, groupId)
+        values(#{userId}, #{groupId})
+    </insert>
+
+    <delete id="deleteMember">
+        delete from member
+        where userId = #{userId} and groupId = #{groupId}
+    </delete>
+</mapper>

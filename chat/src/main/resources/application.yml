@@ -7,4 +7,9 @@ spring:
 server:
   port: ${SERVER_PORT}
 
-socket-address: ${SOCKET_ADDRESS}
+chat-address: ${CHAT_ADDRESS}
+
+mybatis:
+  mapper-locations: classpath:mapping/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

@@ -15,6 +15,21 @@ spring:
             - Path=/account/**
           filters:
             - StripPrefix=1
+
+        - id: chat
+          uri: lb://chat
+          predicates:
+            - Path=/chat/**
+          filters:
+            - StripPrefix=1
+
+        - id: group
+          uri: lb://chat
+          predicates:
+            - Path=/group/**
+          filters:
+            - StripPrefix=1
+
         - id: ws
           uri: lb://connection
           predicates:

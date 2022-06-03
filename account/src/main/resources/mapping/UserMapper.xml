@@ -19,4 +19,9 @@
         insert into user(name, password, salt)
         values(#{user.userName}, #{user.userPwdEncoded}, #{user.salt})
     </insert>
+
+    <select id="getGroups" resultType="Long">
+        select groupId from member
+        where userId = #{userId}
+    </select>
 </mapper>

@@ -6,14 +6,15 @@
 </head>
 
 <body>
-    <input id="userId" type="text" /><br/>
-    <input id="token" type="text" /><br/>
+    userId:     <input id="userId" type="text" /><br/>
+    token:      <input id="token" type="text" /><br/>
     <button onclick="connect()">Connect</button><br/><br/>
-    <input id="text" type="text" /><br/>
-    <input id="to" type="text"/><br/>
+    content:    <input id="text" type="text" /><br/>
+    receiverId: <input id="to" type="text"/><br/>
     <button onclick="send()">Send</button>
-    <button onclick="closeWebSocket()">Close</button><br/>
-    <input id="latestId" type="text"/><br/>
+    <button onclick="sendToGroup()">SendToGroup</button>
+    <button onclick="closeWebSocket()">Disconnect</button><br/><br/>
+    latestId:   <input id="latestId" type="text"/><br/>
     <button onclick="ack()">Send ACK</button>
     <div id="message"></div>
 </body>
@@ -91,6 +92,14 @@
         let userId = document.getElementById('userId').value;
         let receiverId = document.getElementById('to').value;
         let message = {"type": "message", "message": {"content": content, "rawId": 0, "senderId": userId, "receiverId": receiverId}}
+        websocket.send(JSON.stringify(message));
+    }
+
+    function sendToGroup() {
+        let content = document.getElementById('text').value;
+        let userId = document.getElementById('userId').value;
+        let groupId = document.getElementById('to').value;
+        let message = {"type": "message", "message": {"content": content, "rawId": 0, "senderId": userId, "groupId": groupId}}
         websocket.send(JSON.stringify(message));
     }
 

@@ -29,6 +29,11 @@ public class Name {
         return "list" + userId;
     }
 
+    public static String groupListName(Long groupId){
+        Assert.notNull(groupId, "groupId null !");
+        return "groupList" + groupId;
+    }
+
     public static String stateName(Long userId){
         Assert.notNull(userId, "userId null !");
         return "state" + userId;
@@ -37,5 +42,9 @@ public class Name {
     public static String lastId(Long userId){
         Assert.notNull(userId, "userId null !");
         return "last" + userId;
+    }
+
+    public static String groupOnlineList(Long groupId){
+        return "online" + groupId;
     }
 }
