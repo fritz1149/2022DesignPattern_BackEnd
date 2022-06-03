@@ -4,8 +4,7 @@ local ret = {"false"}
 if state == "consistent"
     then
     ret[1] = "true"
-    table.insert(ret, redis.call("get", KEYS[4]))
-    redis.call("set", KEYS[3], "pushing")
+    table.insert(ret, tostring(tonumber(redis.call("get", KEYS[4])) + tonumber(redis.call("llen", KEYS[1]))))
 end
 
 return ret

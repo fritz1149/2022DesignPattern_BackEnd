@@ -1,16 +1,15 @@
-package com.dp.chat.service;
+package com.dp.chat.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import com.dp.common.Enum.State;
-import com.dp.common.Name;
 
-@Service
-public class ColonyService {
+@Repository
+public class ColonyDao {
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired

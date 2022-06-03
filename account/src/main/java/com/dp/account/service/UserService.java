@@ -1,6 +1,8 @@
 package com.dp.account.service;
 
 import cn.dev33.satoken.secure.SaSecureUtil;
+import cn.dev33.satoken.stp.StpUtil;
+import com.dp.account.dao.CacheDao;
 import com.dp.account.dao.UserMapper;
 import com.dp.account.entity.User;
 import com.dp.common.Name;
@@ -8,13 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import  java.security.SecureRandom;
+import java.util.List;
 
 @Service
 public class UserService{
     @Autowired
     UserMapper userMapper;
     @Autowired
-    RedisTemplate redisTemplate;
+    CacheDao cacheDao;
     public enum LoginState{
         LOGIN_OK, USER_NOT_FOUND, PWD_ERROR
     }
@@ -25,7 +28,17 @@ public class UserService{
         password = SaSecureUtil.md5BySalt(password, user.getSalt());
         if(!password.equals(user.getUserPwdEncoded()))
             return LoginState.PWD_ERROR;
+
+        List<Long> groupIds = userMapper.getGroups(userId);
+        for(Long groupId : groupIds)
+            System.out.println("groupId: " + groupId);
+        cacheDao.claimOnlineToGroups(userId, userMapper.getGroups(userId));
+
         return LoginState.LOGIN_OK;
+    }
+
+    public void logout(Long userId){
+        cacheDao.claimOfflineToGroups(userId, userMapper.getGroups(userId));
     }
 
     public Long register(String userName, String password){
@@ -35,8 +48,7 @@ public class UserService{
         userMapper.addUser(user);
 
         Long userId = user.getUserId();
-        redisTemplate.opsForValue().set(Name.lastId(userId), "-1");
-        redisTemplate.opsForValue().set(Name.stateName(userId), "consistent");
+        cacheDao.createUserContext(userId);
 
         return userId;
     }

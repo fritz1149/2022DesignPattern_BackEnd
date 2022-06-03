@@ -1,23 +1,24 @@
-package com.dp.connection.service;
+package com.dp.connection.dao;
 
 import com.dp.common.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.dp.common.Enum.State;
 
-@Service
-public class ColonyService {
+@Repository
+public class ColonyDao {
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
-    private RemoteService remoteService;
+    private RemoteDao remoteDao;
     @Value("${socket-address}")
     private String selfAddress;
 
@@ -37,6 +38,6 @@ public class ColonyService {
         return ret;
     }
     public void sendToChat(String msg){
-        remoteService.send(msg);
+        remoteDao.send(msg);
     }
 }

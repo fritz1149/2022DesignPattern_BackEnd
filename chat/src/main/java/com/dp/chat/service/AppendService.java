@@ -1,9 +1,9 @@
 package com.dp.chat.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dp.chat.dao.ColonyDao;
 import com.dp.chat.entity.Message;
 import com.dp.common.Enum.State;
-import com.dp.common.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -21,42 +21,39 @@ public class AppendService {
     private static final int MessagesNumberLimit = 10000;
     private static final int MessagesTimeLimit = 5;
     @Autowired
-    private ColonyService colonyService;
-    @Autowired
-    private DistributeService distributeService;
+    private ColonyDao colonyDao;
     public ArrayBlockingQueue<Message> messages = new ArrayBlockingQueue<Message>(MessagesNumberLimit);
     private Boolean healthy = true;
 
-    public static int csCount = 0;
     public AppendService(){
-        csCount++;
-        System.out.println("chat service created " + csCount);
         Runnable workload = new Runnable(){
             @Override
             public void run() {
                 while(true){
-                    Message message = null;
                     try {
-                         message = messages.take();
+                        Message message = messages.take();
+                        String pairName = message.getPairName();
+                        if(!pairs.containsKey(pairName))
+                            continue;
+                        message.getDs().saveToStorage(message);
+                        message.getDs().saveToPushList(message);
+                        if (pairs.get(pairName).decrementAndGet() <= 0)
+                            stopToHold(pairName);
                     }catch (InterruptedException e) {
                         e.printStackTrace();
                         break;
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        break;
                     }
-                    String pairName = message.getPairName();
-                    if(!pairs.containsKey(pairName))
-                        continue;
-                    distributeService.saveToStorage(message);
-                    distributeService.saveToPushList(message);
-                    if (pairs.get(pairName).decrementAndGet() <= 0)
-                        stopToHold(pairName);
                 }
                 healthy = false;
             }
         };
         Thread work = new Thread(workload);
-        if(csCount == 1)
-            work.start();
+        work.start();
     }
+
     public State append(String pairName, Message message){
         try {
             pairs.get(pairName).incrementAndGet();
@@ -69,14 +66,14 @@ public class AppendService {
     }
 
     public void startToHold(String pairName){
-        colonyService.recordHolder(pairName);
+        colonyDao.recordHolder(pairName);
         pairs.put(pairName, new AtomicInteger(0));
     }
 
     public State stopToHold(String pairName){
         try {
             pairs.remove(pairName);
-            colonyService.deleteHolder(pairName);
+            colonyDao.deleteHolder(pairName);
             return State.OK;
         }catch (Exception e){
             return State.ERROR;
@@ -88,25 +85,25 @@ public class AppendService {
             System.out.println("NODE UNHEALTHY!");
             return State.ERROR;
         }
-
+        if(message.getSenderId().equals(message.getReceiverId()))
+            return State.ERROR;
         String pairName = message.getPairName();
         if(pairs.containsKey(pairName))
             return append(pairName, message);
 
-        String holderAddress = colonyService.getHolder(pairName);
-        System.out.println("holderAddress: " + holderAddress + "\nselfAddress: " + colonyService.getSelfAddress());
-        if(holderAddress == null || holderAddress.equals(colonyService.getSelfAddress())) {
+        String holderAddress = colonyDao.getHolder(pairName);
+        if(holderAddress == null || holderAddress.equals(colonyDao.getSelfAddress())) {
             startToHold(pairName);
             return append(pairName, message);
         }
 
-        State result = colonyService.forwardRequest(holderAddress, JSONObject.toJSONString(message), "/append");
+        State result = colonyDao.forwardRequest(holderAddress, JSONObject.toJSONString(message), "/append");
 
         if(result == State.ERROR){
             startToHold(pairName);
             MultiValueMap<String, Object> params = new LinkedMultiValueMap<String, Object>();
             params.add("pairName", pairName);
-            colonyService.forwardRequest(holderAddress, params, "/stop");
+            colonyDao.forwardRequest(holderAddress, params, "/stop");
             return append(pairName, message);
         }
 

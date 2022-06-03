@@ -1,6 +1,7 @@
 package com.dp.connection.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dp.connection.dao.ColonyDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -20,10 +21,10 @@ public class WebsocketService {
     private Session session;
     private static final ConcurrentHashMap<Long, WebsocketService> webSocketServices=new ConcurrentHashMap<>();
     private static final AtomicInteger onlineCount = new AtomicInteger();
-    private static ColonyService colonyService;
+    private static ColonyDao colonyDao;
     @Autowired
-    public void setColonyService(ColonyService cs){
-        colonyService = cs;
+    public void setColonyService(ColonyDao cs){
+        colonyDao = cs;
     }
 
     @OnOpen
@@ -33,14 +34,14 @@ public class WebsocketService {
         webSocketServices.put(userId, this);
         onlineCount.incrementAndGet();
         System.out.println("session open. online: " + onlineCount + " userId: " + userId);
-        colonyService.recordConnect(userId);
+        colonyDao.recordConnect(userId);
     }
     @OnClose
     public void onClose(){
         webSocketServices.remove(userId);
         onlineCount.decrementAndGet();
         System.out.println("session close. online: " + onlineCount + " userId: " + userId);
-        colonyService.deleteConnect(userId);
+        colonyDao.deleteConnect(userId);
     }
     public void close() throws IOException{
         session.close();
@@ -48,7 +49,7 @@ public class WebsocketService {
     @OnMessage
     public void onMessage(String msg){
         System.out.println("get msg from " + userId + ": " + msg);
-        colonyService.sendToChat(msg);
+        colonyDao.sendToChat(msg);
     }
 
     public void sendInfo(Object data) throws IOException{
@@ -64,7 +65,7 @@ public class WebsocketService {
                 MultiValueMap<String, Object> params = new LinkedMultiValueMap<String, Object>();
                 params.add("receiverId", receiverId);
                 params.add("content", data);
-                return colonyService.forwardRequest(receiverId, params, "/send");
+                return colonyDao.forwardRequest(receiverId, params, "/send");
             }
         }catch (IOException e){
             return State.ERROR;
@@ -89,7 +90,7 @@ public class WebsocketService {
         else{
             MultiValueMap<String, Object> params = new LinkedMultiValueMap<String, Object>();
             params.add("userId", userId);
-            return colonyService.forwardRequest(userId, params, "/disconnect");
+            return colonyDao.forwardRequest(userId, params, "/disconnect");
         }
     }
 }

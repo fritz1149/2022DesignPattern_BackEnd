@@ -6,13 +6,16 @@
 </head>
 
 <body>
-    <input id="userId" type="text" /><br/>
-    <input id="token" type="text" /><br/>
-    <button onclick="connect()">Connect</button><br/><br/>
-    <input id="text" type="text" /><br/>
-    <button onclick="send()">Send</button>
-    <button onclick="closeWebSocket()">Close</button>
-    <div id="message"></div>
+<input id="userId" type="text" /><br/>
+<input id="token" type="text" /><br/>
+<button onclick="connect()">Connect</button><br/><br/>
+<input id="text" type="text" /><br/>
+<input id="to" type="text"/><br/>
+<button onclick="send()">Send</button>
+<button onclick="closeWebSocket()">Close</button><br/>
+<input id="latestId" type="text"/><br/>
+<button onclick="ack()">Send ACK</button>
+<div id="message"></div>
 </body>
 
 <script type="text/javascript">
@@ -36,11 +39,10 @@
     }
 
     function connect() {
-        var userId = document.getElementById('userId').value;
+        let userId = document.getElementById('userId').value;
         //判断当前浏览器是否支持WebSocket, 主要此处要更换为自己的地址
         if ('WebSocket' in window) {
             websocket = new WebSocket("ws://81.70.70.110:4395/ws/" + userId, [getToken()])
-                //websocket = new WebSocket("ws://localhost:4396/ws/1")
         } else {
             alert('Not support websocket')
         }
@@ -57,6 +59,7 @@
 
         //接收到消息的回调方法
         websocket.onmessage = function(event) {
+            console.log(JSON.parse(event.data))
             setMessageInnerHTML(event.data);
         }
 
@@ -83,8 +86,18 @@
 
     //发送消息
     function send() {
-        var message = document.getElementById('text').value;
-        websocket.send(message);
+        let content = document.getElementById('text').value;
+        let userId = document.getElementById('userId').value;
+        let receiverId = document.getElementById('to').value;
+        let message = {"type": "message", "message": {"content": content, "rawId": 0, "senderId": userId, "receiverId": receiverId}}
+        websocket.send(JSON.stringify(message));
+    }
+
+    function ack(){
+        let latestId = document.getElementById('latestId').value;
+        let userId = document.getElementById('userId').value;
+        let message = {"type": "ack", "userId": userId, "latestId": latestId}
+        websocket.send(JSON.stringify(message));
     }
 </script>
 

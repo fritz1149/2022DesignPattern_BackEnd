@@ -1,4 +1,9 @@
 local serverLatestId = tonumber(redis.call("get", KEYS[1]))
-redis.call("ltrim", KEYS[2], tonumber(KEYS[3]) - serverLatestId, -1)
-redis.call("set", KEYS[1], KEYS[3])
+local clientLatestId = tonumber(KEYS[3])
+if clientLatestId >= serverLatestId
+    then
+    local len = tonumber(redis.call("llen", KEYS[2]))
+    redis.call("ltrim", KEYS[2], clientLatestId - serverLatestId, -1)
+    redis.call("set", KEYS[1], math.min(clientLatestId, serverLatestId + len))
+end
 return {"OK"}

@@ -30,8 +30,10 @@ public class AccountController {
     @ApiOperation("携带token才能登出")
     @PostMapping("/logout")
     public SaResult logout(){
+        Long userId = (Long) StpUtil.getLoginId();
+        userService.logout(userId);
         StpUtil.logout();
-        return SaResult.ok(remoteService.kickOut((Long) StpUtil.getLoginId()));
+        return SaResult.ok(remoteService.kickOut(userId));
     }
 
     @PostMapping("/login")

@@ -2,14 +2,13 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
+        server-addr: 192.168.15.43:8848
       config:
-        server-addr: localhost:8848
+        server-addr: 192.168.15.43:8848
         file-extension: yaml
   redis:
-    host: 47.94.225.40
+    host: 192.168.2.221
     port: 6379
-    password: 20011013cc
     timeout: 3000
     jedis:
       pool:
@@ -20,12 +19,8 @@ spring:
   data:
     mongodb:
       database: IM
-      host: 47.94.225.40
+      host: 192.168.7.115
       port: 27017
       username: admin
       password: admin
       authentication-database: admin
-  datasource:
-    url: jdbc:mysql://47.94.225.40:3306/im?serverTimezone=GMT
-    username: MS
-    password: XZRyNBkzea6iKHPA
