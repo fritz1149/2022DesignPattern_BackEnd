@@ -4,7 +4,8 @@ set name[0]=account
 set name[1]=connection
 set name[2]=gateway
 set name[3]=chat
-for /l %%i in (0,1,3) do (
+set name[4]=file
+for /l %%i in (0,1,4) do (
     docker build -t 19231149/!name[%%i]! ./!name[%%i]!
     docker tag 19231149/!name[%%i]! ccr.ccs.tencentyun.com/2022im/!name[%%i]!
     docker push ccr.ccs.tencentyun.com/2022im/!name[%%i]!

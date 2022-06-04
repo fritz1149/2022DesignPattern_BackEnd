@@ -3,6 +3,7 @@ package com.dp.file.controller;
 import com.dp.file.entity.MyFile;
 import com.dp.file.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -29,13 +30,16 @@ public class FileController {
     @Autowired
     FileService fileService;
     String serverAddress = "http://82.156.59.244/";
+    @Value("${file-path}")
+    private String filePath;
 
     @PostMapping("/upload")
     public Object uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("userId") String uID, @RequestParam("type") String type) {
         Map<String, Object> result = new HashMap<>(), data = new HashMap<>();
         result.put("data", data);
         try {
-            File path = new File(System.getProperty("user.dir"));
+//            File path = new File(System.getProperty("user.dir"));
+            File path = new File(filePath);
             String curDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
             String pathPrefix = "dpFiles/dpUid_" + uID + "/FileStorage/" + curDate + "/";
             LocalDateTime currentDateTime = LocalDateTime.now();

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <script type="text/javascript" src="js/jquery.min.js" ></script>
+  <script type="text/javascript" src="js/afquery.js" ></script>
+  <style>
+    .main{
+
+    }
+
+    .main input{
+      margin: 20px;
+    }
+    .main .upload{
+      background-color: cornflowerblue;
+      color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 1px;
+      padding: 8px 18px;
+    }
+  </style>
+</head>
+<body>
+<div class="main">
+  <input type="text" id="type"/>文件类型<br/>
+  <input type="text" id="userId"/>用户id<br/>
+  <input type="token" id="token"/>token<br/>
+  <input type="file" class="filebutton" style="display: none;" onchange="fileSelected()" /><br />
+  <button class="upload" onclick="openFileDialog()">选择上传文件</button>
+</div>
+</body>
+
+<script>
+  function getToken() {
+    var token = document.getElementById('token').value;
+    if(token)
+      return token
+    console.log("cookie: " + document.cookie)
+    let cookie = document.cookie.split(";");
+    for (var i = 0; i < cookie.length; i++) {
+      var arr = cookie[i].split("=");
+      console.log(arr[0] + " = " + arr[1])
+      if (arr[0] == "token") {
+        return token = arr[1];
+      }
+    }
+    return "";
+  }
+
+  //点击普通按钮
+  function openFileDialog()
+  {
+    //模拟鼠标点击事件
+    $(".filebutton").click();
+  }
+
+  // 用户选择了一个文件 onchange事件被触发
+  function fileSelected()
+  {
+    var fbutton = $(".filebutton")[0];  //DOM
+    var file = fbutton.files[0];   //fbutton.files可能一次选择了多个文件
+    fbutton.value = "";  //清空选择
+    startUpload(file);   //开始上传
+  }
+
+  // 开始上传, 参数为 File 对象
+  function startUpload( file )
+  {
+    var uploadUrl = "http://81.70.70.110:4396/file/upload";
+
+    // 手工构造一个 form 对象
+    var formData = new FormData();
+    formData.append('file', file); // 'file' 为HTTP Post里的字段名, file 对浏览器里的File对象
+    let type = document.getElementById('type').value;
+    formData.append('type', type);
+    let userId = document.getElementById('userId').value;
+    formData.append('userId', userId);
+
+    // 手工构造一个请求对象，用这个对象来发送表单数据
+    // 设置 progress, load, error, abort 4个事件处理器
+    var request = new XMLHttpRequest();
+    request.upload.addEventListener("progress", window.evt_upload_progress, false);
+    request.addEventListener("load", window.evt_upload_complete, false);
+    request.addEventListener("error", window.evt_upload_failed, false);
+    request.addEventListener("abort", window.evt_upload_cancel, false);
+    request.open("POST", uploadUrl ); // 设置服务URL
+    console.log("token get: " + getToken())
+    request.setRequestHeader('token', getToken())
+    request.send(formData);  // 发送表单数据
+  }
+
+  window.evt_upload_progress = function (evt)
+  {
+    if (evt.lengthComputable)
+    {
+      var progress = Math.round(evt.loaded * 100 / evt.total);
+      console.log ("上传进度: " + progress);
+    }
+  };
+  window.evt_upload_complete = function (evt)
+  {
+    if(evt.loaded == 0)
+    {
+      console.log ("上传失败!");
+    }
+    else
+    {
+      console.log ("上传完成!");
+      var response = JSON.parse(evt.target.responseText);
+      console.log (response);
+    }
+  };
+  window.evt_upload_failed = function (evt)
+  {
+    console.log  ("上传出错");
+  };
+  window.evt_upload_cancel = function (evt)
+  {
+    console.log( "上传中止!");
+  };
+
+
+</script>
+</html>
