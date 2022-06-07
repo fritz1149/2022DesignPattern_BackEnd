@@ -10,6 +10,7 @@ import com.dp.account.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 public class AccountController {
@@ -30,10 +31,18 @@ public class AccountController {
     @ApiOperation("携带token才能登出")
     @PostMapping("/logout")
     public SaResult logout(){
-        Long userId = (Long) StpUtil.getLoginId();
+        Long userId = Long.valueOf(StpUtil.getLoginId().toString());
         userService.logout(userId);
         StpUtil.logout();
         return SaResult.ok(remoteService.kickOut(userId));
+    }
+
+    @PostMapping("/logoutInner")
+    @ApiIgnore
+    public SaResult logoutInner(Long userId){
+        userService.logout(userId);
+        StpUtil.logout(userId, "PC");
+        return SaResult.ok();
     }
 
     @PostMapping("/login")

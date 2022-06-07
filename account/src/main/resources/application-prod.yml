@@ -20,3 +20,9 @@ spring:
         max-idle: 8
         max-active: 8
         max-wait: -1
+
+logging:
+  file:
+    name: account.log
+  level:
+    '*' : WARN

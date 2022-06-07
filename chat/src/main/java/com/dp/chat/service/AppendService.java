@@ -29,25 +29,25 @@ public class AppendService {
         Runnable workload = new Runnable(){
             @Override
             public void run() {
-                while(true){
+                while(true) {
                     try {
                         Message message = messages.take();
                         String pairName = message.getPairName();
-                        if(!pairs.containsKey(pairName))
+                        if (!pairs.containsKey(pairName))
                             continue;
                         message.getDs().saveToStorage(message);
                         message.getDs().saveToPushList(message);
                         if (pairs.get(pairName).decrementAndGet() <= 0)
                             stopToHold(pairName);
+                    }catch (NullPointerException e){
+                        e.printStackTrace();
                     }catch (InterruptedException e) {
                         e.printStackTrace();
-                        break;
                     }catch (Exception e){
                         e.printStackTrace();
-                        break;
                     }
                 }
-                healthy = false;
+//                healthy = false;
             }
         };
         Thread work = new Thread(workload);

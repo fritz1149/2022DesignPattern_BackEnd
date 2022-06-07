@@ -7,12 +7,36 @@
         <result column="name" property="userName"/>
         <result column="password" property="userPwdEncoded"/>
         <result column="salt" property="salt"/>
+        <result column="avatar" property="userAvatar"/>
+        <result column="sign" property="sign"/>
+        <result column="group" property="group"/>
+        <result column="remark" property="remark"/>
     </resultMap>
 
     <select id="getUserById" resultMap="userMap">
-        select id, name, password, salt
+        select id, name, password, salt, avatar, sign
         from user
         where id = #{id}
+    </select>
+
+    <select id="getUserByName" resultMap="userMap">
+        select id, name, avatar, sign
+        from user
+        where name like concat('%', #{name}, '%')
+    </select>
+
+    <select id="getNonContactByName" resultMap="userMap">
+        select id, name, avatar, sign
+        from
+            (select id, name, avatar, sign
+             from user
+             where name like concat('%', #{name}, '%')) as a
+                left join
+            (select contact_id
+             from contact
+             where user_id = #{userId}) as b
+            on id = contact_id
+        where contact_id is null and id != #{userId}
     </select>
 
     <insert id="addUser" useGeneratedKeys="true" keyProperty="userId">
@@ -21,7 +45,25 @@
     </insert>
 
     <select id="getGroups" resultType="Long">
-        select groupId from member
-        where userId = #{userId}
+        select group_id from member
+        where user_id = #{userId}
     </select>
+
+    <update id="uploadAvatar">
+        update user
+        set avatar = #{avatar}
+        where id = #{userId}
+    </update>
+
+    <update id="uploadPassword">
+        update user
+        set password = #{password}, salt = #{salt}
+        where id = #{userId}
+    </update>
+
+    <update id="uploadSign">
+        update user
+        set sign = #{sign}
+        where id = #{userId}
+    </update>
 </mapper>

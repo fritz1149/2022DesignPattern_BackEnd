@@ -14,12 +14,12 @@
     </insert>
 
     <insert id="addMember">
-        insert into member(userId, groupId)
+        insert into member(user_id, group_id)
         values(#{userId}, #{groupId})
     </insert>
 
     <delete id="deleteMember">
         delete from member
-        where userId = #{userId} and groupId = #{groupId}
+        where user_id = #{userId} and group_id = #{groupId}
     </delete>
 </mapper>

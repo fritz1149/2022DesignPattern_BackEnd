@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dp.chat.dao.ContactMapper">
+    <resultMap id="userInfo" type="com.dp.chat.entity.UserInfo">
+        <id column="contact_id" property="userId"/>
+        <result column="name" property="userName"/>
+        <result column="avatar" property="userAvatar"/>
+        <result column="remark" property="remark"/>
+        <result column="group" property="group"/>
+        <result column="sign" property="sign"/>
+    </resultMap>
+
+    <insert id="addContact">
+        insert ignore into contact(user_id, contact_id)
+        values(#{userId}, #{contactId})
+    </insert>
+
+    <delete id="deleteContact">
+        delete from contact
+        where user_id=#{userId} and contact_id=#{contactId}
+    </delete>
+
+    <select id="getContacts" resultMap="userInfo">
+        select contact_id, name, avatar, `group`, remark, sign from
+        (select contact_id, `group`, remark from contact
+        where user_id=#{userId}) as c join user
+        on c.contact_id = user.id
+    </select>
+
+    <update id="setRemark">
+        update contact
+        set remark = #{remark}
+        where user_id = #{userId} and contact_id = #{contactId}
+    </update>
+
+    <update id="setGroup">
+        update contact
+        set `group` = #{group}
+        where user_id = #{userId} and contact_id = #{contactId}
+    </update>
+</mapper>

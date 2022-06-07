@@ -9,6 +9,8 @@ import com.dp.common.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
 import  java.security.SecureRandom;
 import java.util.List;
 
@@ -58,5 +60,47 @@ public class UserService{
         SecureRandom random = new SecureRandom();
         random.nextBytes(saltBytes);
         return new String(saltBytes);
+    }
+
+    public Long uploadAvatar(Long userId, String avatar){
+        Assert.notNull(userId, "userId null");
+        Assert.notNull(avatar, "avatar null");
+        return userMapper.uploadAvatar(userId, avatar);
+    }
+
+    public Long uploadField(Long userId, String sign){
+        Assert.notNull(userId, "userId null");
+        Assert.notNull(sign, "sign null");
+        return userMapper.uploadSign(userId, sign);
+    }
+
+    public Long uploadPassword(Long userId, String password){
+        Assert.notNull(userId, "userId null");
+        Assert.notNull(password, "password");
+        String salt = generateSalt();
+        password = SaSecureUtil.md5BySalt(password, salt);
+        System.out.println(password + " " + salt);
+        return userMapper.uploadPassword(userId, password, salt);
+    }
+
+    public User getInfo(Long userId){
+        Assert.notNull(userId, "userId null");
+        User user = userMapper.getUserById(userId);
+        if(user == null)
+            return null;
+        user.setSalt(null);
+        user.setUserPwdEncoded(null);
+        return user;
+    }
+
+    public List<User> getUserByName(String name){
+        Assert.notNull(name, "name null");
+        return userMapper.getUserByName(name);
+    }
+
+    public List<User> getStrangerByName(String name, Long userId){
+        Assert.notNull(name, "name null");
+        Assert.notNull(userId, "userId null");
+        return userMapper.getNonContactByName(name, userId);
     }
 }

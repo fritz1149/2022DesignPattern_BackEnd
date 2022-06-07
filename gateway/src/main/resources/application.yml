@@ -30,12 +30,20 @@ spring:
           filters:
             - StripPrefix=1
 
+        - id: contact
+          uri: lb://chat
+          predicates:
+            - Path=/contact/**
+          filters:
+            - StripPrefix=1
+
         - id: ws
           uri: lb://connection
           predicates:
             - Path=/ws/**
           filters:
             - RemoveRequestHeader=Sec-WebSocket-Protocol
+
         - id: file
           uri: lb://file
           predicates:

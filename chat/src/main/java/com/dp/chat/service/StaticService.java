@@ -3,9 +3,11 @@ package com.dp.chat.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dp.chat.dao.CacheDao;
+import com.dp.chat.dao.ContactMapper;
 import com.dp.chat.dao.GroupMapper;
 import com.dp.chat.dao.StorageDao;
 import com.dp.chat.entity.ChatTemplate;
+import com.dp.chat.entity.UserInfo;
 import com.dp.common.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,6 +24,8 @@ public class StaticService {
     StorageDao storageDao;
     @Autowired
     GroupMapper groupMapper;
+    @Autowired
+    ContactMapper contactMapper;
     @Autowired
     CacheDao cacheDao;
     public String claimStorage(Long userId1, Long userId2){
@@ -62,5 +66,49 @@ public class StaticService {
             return "user not in the group";
         else
             return "error";
+    }
+
+    public String addContact(Long userId, Long contactId){
+        Assert.notNull(userId, "userId null");
+        Assert.notNull(contactId, "contactId null");
+        Long linesAffected = contactMapper.addContact(userId, contactId);
+        System.out.println(linesAffected);
+        if(linesAffected == 1L)
+            return "OK";
+        else if(linesAffected == 0L)
+            return "contact already exists";
+        else
+            return "error";
+    }
+
+    public String removeContact(Long userId, Long contactId){
+        Assert.notNull(userId, "userId null");
+        Assert.notNull(contactId, "contactId null");
+        Long linesAffected = contactMapper.deleteContact(userId, contactId);
+        if(linesAffected == 1L)
+            return "OK";
+        else if(linesAffected == 0L)
+            return "not contact";
+        else
+            return "error";
+    }
+
+    public List<UserInfo> getContacts(Long userId){
+        Assert.notNull(userId, "userId null");
+        return contactMapper.getContacts(userId);
+    }
+
+    public Long setRemark(Long userId, Long contactId, String remark){
+        Assert.notNull(userId, "userId null");
+        Assert.notNull(contactId, "contactId null");
+        Assert.notNull(remark, "remark null");
+        return contactMapper.setRemark(userId, contactId, remark);
+    }
+
+    public Long setGroup(Long userId, Long contactId, String group){
+        Assert.notNull(userId, "userId null");
+        Assert.notNull(contactId, "contactId null");
+        Assert.notNull(group, "group null");
+        return contactMapper.setGroup(userId, contactId, group);
     }
 }

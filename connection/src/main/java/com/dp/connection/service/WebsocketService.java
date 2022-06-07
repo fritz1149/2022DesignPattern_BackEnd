@@ -1,6 +1,7 @@
 package com.dp.connection.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dp.connection.dao.AccountDao;
 import com.dp.connection.dao.ColonyDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,7 @@ public class WebsocketService {
         onlineCount.decrementAndGet();
         System.out.println("session close. online: " + onlineCount + " userId: " + userId);
         colonyDao.deleteConnect(userId);
+//        colonyDao.claimOffline(userId);
     }
     public void close() throws IOException{
         session.close();
@@ -49,7 +51,14 @@ public class WebsocketService {
     @OnMessage
     public void onMessage(String msg){
         System.out.println("get msg from " + userId + ": " + msg);
-        colonyDao.sendToChat(msg);
+        try {
+            colonyDao.sendToChat(msg);
+        }catch (Exception e){
+            distributeInfo(new JSONObject()
+                    .fluentPut("type", "error")
+                    .fluentPut("msg", "消息处理失败")
+                    .fluentPut("data", msg), userId);
+        }
     }
 
     public void sendInfo(Object data) throws IOException{

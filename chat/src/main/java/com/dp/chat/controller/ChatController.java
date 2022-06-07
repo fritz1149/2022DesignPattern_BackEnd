@@ -8,6 +8,8 @@ import com.dp.chat.service.AppendService;
 import com.dp.chat.service.DistributeServiceGroupImpl;
 import com.dp.chat.service.DistributeServiceSingleImpl;
 import com.dp.chat.service.StaticService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,7 @@ public class ChatController {
     public String receiveRawData(@RequestBody String rawData){
         JSONObject json = JSON.parseObject(rawData);
         String type = (String)(json.get("type"));
+        System.out.println("get msg" + rawData);
         if(type.equals("message")) {
             Message message = new Message(json.get("message").toString());
             message.setDs(distributeServiceSingle);
@@ -50,16 +53,20 @@ public class ChatController {
         return appendService.stopToHold(pairName).toString();
     }
 
+    @ApiOperation("陌生人聊天之前先调这个接口")
     @PostMapping("/startChat")
-    public JSONObject startChat(@RequestParam Long userId1, @RequestParam Long userId2){
+    public JSONObject startChat(@ApiParam("自己id") @RequestParam Long userId1, @ApiParam("对方id") @RequestParam Long userId2){
         return new JSONObject()
                 .fluentPut("code", 200)
                 .fluentPut("msg", staticService.claimStorage(userId1, userId2));
     }
 
+    @ApiOperation("聊天记录")
     @GetMapping("/log")
-    public JSONObject getLog(@RequestParam Long userId1, @RequestParam Long userId2,
-                         @RequestParam Integer pageSize, @RequestParam Integer pageNum){
+    public JSONObject getLog(@ApiParam("自己id") @RequestParam Long userId1,
+                             @ApiParam("对方id") @RequestParam Long userId2,
+                             @ApiParam("每页消息数") @RequestParam Integer pageSize,
+                             @ApiParam("第几页") @RequestParam Integer pageNum){
         return new JSONObject()
                 .fluentPut("code", 200)
                 .fluentPut("data", staticService.getChatLog(userId1, userId2, pageSize, pageNum).toJSONString());

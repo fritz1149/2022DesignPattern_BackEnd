@@ -1,27 +1,12 @@
-package com.dp.account.entity;
-import java.util.Collections;
+package com.dp.chat.entity;
 
-public class User{
+public class UserInfo {
     private Long userId;
     private String userName;
-    private String userPwdEncoded;
     private String userAvatar;
-    private String salt;
+    private String remark;
+    private String group;
     private String sign;
-
-    public User(String userName, String userPwdEncoded, String salt) {
-        this.userName = userName;
-        this.userPwdEncoded = userPwdEncoded;
-        this.salt = salt;
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
-    }
 
     public Long getUserId() {
         return userId;
@@ -39,20 +24,28 @@ public class User{
         this.userName = userName;
     }
 
-    public String getUserPwdEncoded() {
-        return userPwdEncoded;
-    }
-
-    public void setUserPwdEncoded(String userPwdEncoded) {
-        this.userPwdEncoded = userPwdEncoded;
-    }
-
     public String getUserAvatar() {
         return userAvatar;
     }
 
     public void setUserAvatar(String userAvatar) {
         this.userAvatar = userAvatar;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 
     public String getSign() {

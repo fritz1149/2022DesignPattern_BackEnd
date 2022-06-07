@@ -39,12 +39,13 @@ public class SaTokenConfig {
                             // 有效时间
                             .setHeader("Access-Control-Max-Age", "3600")
                             // 允许的header参数
-                            .setHeader("Access-Control-Allow-Headers", "*")
+                            .setHeader("Access-Control-Allow-Headers", "*, token, Content-Type")
                             .setHeader("Access-Control-Allow-Credentials", "true")
                     ;
                 })
                 .setAuth(obj -> {
                     SaRouter.match("/account/logout").check(r -> StpUtil.checkLogin());
+//                    SaRouter.match("/download")
                     SaRouter.match("/ws/**").check(r -> {
                         String token = SaHolder.getRequest().getHeader("Sec-WebSocket-Protocol");
                         // websocket需要在返回报文同样加一个协议的头

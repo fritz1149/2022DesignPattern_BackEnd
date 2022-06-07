@@ -19,6 +19,8 @@ public class ColonyDao {
     private RestTemplate restTemplate;
     @Autowired
     private RemoteDao remoteDao;
+    @Autowired
+    private AccountDao accountDao;
     @Value("${socket-address}")
     private String selfAddress;
 
@@ -27,6 +29,9 @@ public class ColonyDao {
     }
     public void deleteConnect(Long userId){
         redisTemplate.delete(Name.socketName(userId));
+    }
+    public void claimOffline(Long userId){
+        accountDao.logout(userId);
     }
     public State forwardRequest(Long userId, MultiValueMap<String, Object> params, String request){
         String goalAddress = (String)redisTemplate.opsForValue().get(Name.socketName(userId));
