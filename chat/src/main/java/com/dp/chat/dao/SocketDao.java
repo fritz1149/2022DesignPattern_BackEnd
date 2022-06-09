@@ -19,6 +19,16 @@ public class SocketDao {
         return State.valueOf(remoteDao.send(userId, data.toJSONString()));
     }
 
+    public State sendGroupMessages(Long userId, Long serverLatestId, Long groupId, JSONArray messages){
+        JSONObject data = new JSONObject();
+        data.put("messages", messages);
+        data.put("type", "groupMessage");
+        data.put("groupId", groupId);
+        data.put("start", serverLatestId + 1);
+        System.out.println("prepare to send: " + data.toJSONString());
+        return State.valueOf(remoteDao.send(userId, data.toJSONString()));
+    }
+
     public void sendInfo(Long userId, Long serverLatestId, String msg){
         JSONObject data = new JSONObject();
         data.put("type", "info");

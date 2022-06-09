@@ -7,6 +7,8 @@ import com.dp.chat.dao.ContactMapper;
 import com.dp.chat.dao.GroupMapper;
 import com.dp.chat.dao.StorageDao;
 import com.dp.chat.entity.ChatTemplate;
+import com.dp.chat.entity.Group;
+import com.dp.chat.entity.Message.MessageFactory;
 import com.dp.chat.entity.UserInfo;
 import com.dp.common.Name;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,12 @@ public class StaticService {
     ContactMapper contactMapper;
     @Autowired
     CacheDao cacheDao;
+    @Autowired
+    AppendService appendService;
+    @Autowired
+    MessageFactory messageFactory;
+
+
     public String claimStorage(Long userId1, Long userId2){
         Assert.notNull(userId1, "userId null");
         Assert.notNull(userId2, "userId null");
@@ -42,10 +50,13 @@ public class StaticService {
         return storageDao.getLog(pairName, offset, limit);
     }
 
-    public String claimGroup(String groupName, Long  userId){
-        storageDao.claimGroup(groupName, userId);
-        //群组成员存储
-        return "OK";
+    public Long claimGroup(String groupName, Long userId){
+        return storageDao.claimGroup(groupName, userId);
+    }
+
+    public Group getGroup(Long groupId){
+        Assert.notNull(groupId, "groupId null");
+        return groupMapper.getGroupById(groupId);
     }
 
     public String joinGroup(Long userId, Long groupId){
@@ -73,7 +84,7 @@ public class StaticService {
         Assert.notNull(contactId, "contactId null");
         Long linesAffected = contactMapper.addContact(userId, contactId);
         System.out.println(linesAffected);
-        if(linesAffected == 1L)
+        if(linesAffected == 1L || linesAffected == 2L)
             return "OK";
         else if(linesAffected == 0L)
             return "contact already exists";
@@ -110,5 +121,19 @@ public class StaticService {
         Assert.notNull(contactId, "contactId null");
         Assert.notNull(group, "group null");
         return contactMapper.setGroup(userId, contactId, group);
+    }
+
+    public Boolean beContact(Long userId, Long contactId, String type){
+        Assert.notNull(userId, "userId null");
+        Assert.notNull(contactId, "contactId null");
+        Long relation = contactMapper.checkContact(userId, contactId);
+        if(relation == 2L)
+            return false; // 已经是好友关系
+        else{
+            if(type.equals("response"))
+                addContact(userId, contactId);
+            appendService.appendMessage(messageFactory.contactRequest(userId, contactId, type));
+            return true;
+        }
     }
 }

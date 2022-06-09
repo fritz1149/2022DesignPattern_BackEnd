@@ -12,6 +12,7 @@ import java.util.List;
 public interface UserMapper {
     public List<User> getUserByName(@Param("name") String name);
     public List<User> getNonContactByName(@Param("name") String name, @Param("userId") Long userId);
+    public List<User> getContactByName(@Param("name") String name, @Param("userId") Long userId);
     public User getUserById(@Param("id") Long userId);
     public Long addUser(@Param("user") User user);
     public List<Long> getGroups(@Param("userId") Long userId);

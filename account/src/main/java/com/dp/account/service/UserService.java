@@ -103,4 +103,10 @@ public class UserService{
         Assert.notNull(userId, "userId null");
         return userMapper.getNonContactByName(name, userId);
     }
+
+    public List<User> getContactByName(String name, Long userId){
+        Assert.notNull(name, "name null");
+        Assert.notNull(userId, "userId null");
+        return userMapper.getContactByName(name, userId);
+    }
 }

@@ -119,7 +119,7 @@ public class FileController {
     }
 
     @ApiOperation("文件信息")
-    @PostMapping("/info")
+    @GetMapping("/info")
     public Object getFileInfo(@RequestParam("type") String type, @RequestParam("key") String key) {
         Map<String, Object> result = new HashMap<>();
         try {

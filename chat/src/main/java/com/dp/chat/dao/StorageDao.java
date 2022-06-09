@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dp.chat.entity.ChatTemplate;
 import com.dp.chat.entity.Group;
-import com.dp.chat.entity.GroupTemplate;
-import com.dp.chat.entity.Message;
-import com.dp.common.Name;
+import com.dp.chat.entity.Message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -64,12 +62,12 @@ public class StorageDao {
         return "Already exist";
     }
 
-    public String claimGroup(String groupName, Long userId){
+    public Long claimGroup(String groupName, Long userId){
         Group group = new Group(groupName);
         groupMapper.addGroup(group);
         Long groupId = group.getGroupId();
         groupMapper.addMember(userId, groupId);
         mongoTemplate.insert(new ChatTemplate(0, groupId.toString()), "messages");
-        return "OK";
+        return groupId;
     }
 }

@@ -39,6 +39,19 @@
         where contact_id is null and id != #{userId}
     </select>
 
+    <select id="getContactByName" resultMap="userMap">
+        select id, name, avatar, sign
+        from
+            (select id, name, avatar, sign
+             from user
+             where name like concat('%', #{name}, '%')) as a
+            join
+            (select contact_id
+             from contact
+             where user_id = #{userId}) as b
+            on id = contact_id
+    </select>
+
     <insert id="addUser" useGeneratedKeys="true" keyProperty="userId">
         insert into user(name, password, salt)
         values(#{user.userName}, #{user.userPwdEncoded}, #{user.salt})

@@ -16,6 +16,8 @@
     <button onclick="closeWebSocket()">Disconnect</button><br/><br/>
     latestId:   <input id="latestId" type="text"/><br/>
     <button onclick="ack()">Send ACK</button>
+    groupId: <input id="groupId" type="text"/><br/>
+    <button onclick="ackGroup()">Send GroupACK</button>
     <div id="message"></div>
 </body>
 
@@ -107,6 +109,14 @@
         let latestId = document.getElementById('latestId').value;
         let userId = document.getElementById('userId').value;
         let message = {"type": "ack", "userId": userId, "latestId": latestId}
+        websocket.send(JSON.stringify(message));
+    }
+
+    function ackGroup(){
+        let latestId = document.getElementById('latestId').value;
+        let userId = document.getElementById('userId').value;
+        let groupId = document.getElementById('groupId').value;
+        let message = {"type": "ack", "userId": userId, "latestId": latestId, "groupId": groupId}
         websocket.send(JSON.stringify(message));
     }
 </script>

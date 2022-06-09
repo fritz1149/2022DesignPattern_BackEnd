@@ -2,7 +2,7 @@ package com.dp.chat.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dp.chat.dao.ColonyDao;
-import com.dp.chat.entity.Message;
+import com.dp.chat.entity.Message.Message;
 import com.dp.common.Enum.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +24,8 @@ public class AppendService {
     private ColonyDao colonyDao;
     public ArrayBlockingQueue<Message> messages = new ArrayBlockingQueue<Message>(MessagesNumberLimit);
     private Boolean healthy = true;
+    @Autowired
+    private DistributeService distributeService;
 
     public AppendService(){
         Runnable workload = new Runnable(){
@@ -35,8 +37,7 @@ public class AppendService {
                         String pairName = message.getPairName();
                         if (!pairs.containsKey(pairName))
                             continue;
-                        message.getDs().saveToStorage(message);
-                        message.getDs().saveToPushList(message);
+                        message.distribute(distributeService);
                         if (pairs.get(pairName).decrementAndGet() <= 0)
                             stopToHold(pairName);
                     }catch (NullPointerException e){
@@ -85,8 +86,7 @@ public class AppendService {
             System.out.println("NODE UNHEALTHY!");
             return State.ERROR;
         }
-        if(message.getSenderId().equals(message.getReceiverId()))
-            return State.ERROR;
+
         String pairName = message.getPairName();
         if(pairs.containsKey(pairName))
             return append(pairName, message);

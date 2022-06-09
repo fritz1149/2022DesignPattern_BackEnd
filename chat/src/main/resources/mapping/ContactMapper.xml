@@ -13,7 +13,8 @@
 
     <insert id="addContact">
         insert ignore into contact(user_id, contact_id)
-        values(#{userId}, #{contactId})
+        values (#{userId}, #{contactId}),
+            (#{contactId}, #{userId})
     </insert>
 
     <delete id="deleteContact">
@@ -26,6 +27,18 @@
         (select contact_id, `group`, remark from contact
         where user_id=#{userId}) as c join user
         on c.contact_id = user.id
+    </select>
+
+    <select id="getUserInfo" resultMap="userInfo">
+        select avatar, sign
+        from user
+        where id = #{userId}
+    </select>
+
+    <select id="checkContact" resultType="Long">
+        select count(*) from contact
+        where (user_id = #{userId} and contact_id = #{contactId})
+           or (user_id = #{contactId} and contact_id = #{userId})
     </select>
 
     <update id="setRemark">

@@ -13,6 +13,45 @@
         values(#{group.groupName})
     </insert>
 
+    <select id="getGroupById" resultMap="groupMap">
+        select id, name, avatar
+        from `group`
+        where id = #{groupId}
+    </select>
+
+    <select id="getGroupByName" resultMap="groupMap">
+        select id, name, avatar
+        from `group`
+        where name like concat('%', #{name}, '%')
+    </select>
+
+    <select id="getStrangerGroupByName" resultMap="groupMap">
+        select id, name, avatar
+        from
+            (select id, name, avatar
+            from `group`
+            where name like concat('%', #{name}, '%')) as a
+                left join
+            (select group_id
+            from `member`
+            where user_id = #{userId}) as b
+                on a.id = b.group_id
+        where group_id is null
+    </select>
+
+    <select id="getMyGroupByName" resultMap="groupMap">
+        select id, name, avatar
+        from
+            (select id, name, avatar
+             from `group`
+             where name like concat('%', #{name}, '%')) as a
+                join
+            (select group_id
+             from member
+             where user_id = #{userId}) as b
+            on a.id = b.group_id
+    </select>
+
     <insert id="addMember">
         insert into member(user_id, group_id)
         values(#{userId}, #{groupId})

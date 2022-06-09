@@ -30,6 +30,29 @@ public class ContactController {
         return ret;
     }
 
+    @ApiOperation("请求加好友")
+    @PostMapping("/request")
+    public JSONObject requestContact(@ApiParam("自己id")@RequestParam Long userId,
+                                     @ApiParam("对方id")@RequestParam Long contactId,
+                                     @ApiParam("request表示请求加好友，response表示同意加好友")@RequestParam String type){
+        JSONObject ret = new JSONObject();
+        try{
+            if(!type.equals("request") && !type.equals("response")) {
+                ret.put("code", 400);
+                ret.put("msg", "type参数不合法");
+            }
+            else if(staticService.beContact(userId, contactId, type))
+                ret.put("code", 200);
+            else {
+                ret.put("code", 403);
+                ret.put("msg", "已经是好友");
+            }
+        }catch (Exception e){
+            return ret.fluentPut("code", 500);
+        }
+        return ret;
+    }
+
     @ApiOperation("删好友")
     @PostMapping("/remove")
     public JSONObject removeContact(@RequestParam Long userId, @RequestParam Long contactId){

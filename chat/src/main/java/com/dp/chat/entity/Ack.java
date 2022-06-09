@@ -1,12 +1,9 @@
 package com.dp.chat.entity;
 
-import com.dp.chat.service.DistributeService;
-
 public class Ack {
     private Long userId;
     private Long clientLatestId;
     private Long targetId;
-    private DistributeService ds;
 
     public Ack() {
     }
@@ -38,13 +35,5 @@ public class Ack {
 
     public void setTargetId(Long targetId) {
         this.targetId = targetId;
-    }
-
-    public DistributeService getDs() {
-        return ds;
-    }
-
-    public void setDs(DistributeService ds) {
-        this.ds = ds;
     }
 }

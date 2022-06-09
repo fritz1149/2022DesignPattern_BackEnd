@@ -1,5 +1,7 @@
 package com.dp.chat.entity;
 
+import com.dp.chat.entity.Message.Message;
+
 import java.util.ArrayList;
 import java.util.List;
 

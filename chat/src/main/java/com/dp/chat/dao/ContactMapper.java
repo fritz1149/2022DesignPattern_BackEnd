@@ -12,7 +12,9 @@ import java.util.List;
 public interface ContactMapper {
     Long addContact(@Param("userId") Long userId, @Param("contactId") Long contactId);
     Long deleteContact(@Param("userId") Long userId, @Param("contactId") Long contactId);
+    Long checkContact(@Param("userId") Long userId, @Param("contactId") Long contactId);
     List<UserInfo> getContacts(@Param("userId") Long userId);
+    UserInfo getUserInfo(@Param("userId") Long userId);
     Long setRemark(@Param("userId") Long userId, @Param("contactId") Long contactId, @Param("remark") String remark);
     Long setGroup(@Param("userId") Long userId, @Param("contactId") Long contactId, @Param("group") String group);
 }

@@ -3,15 +3,14 @@ package com.dp.chat.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dp.chat.entity.Ack;
-import com.dp.chat.entity.Message;
+import com.dp.chat.entity.Message.Message;
+import com.dp.chat.entity.Message.MessageFactory;
 import com.dp.chat.service.AppendService;
-import com.dp.chat.service.DistributeServiceGroupImpl;
-import com.dp.chat.service.DistributeServiceSingleImpl;
+import com.dp.chat.service.DistributeService;
 import com.dp.chat.service.StaticService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -20,11 +19,11 @@ public class ChatController {
     @Autowired
     AppendService appendService;
     @Autowired
-    DistributeServiceSingleImpl distributeServiceSingle;
-    @Autowired
-    DistributeServiceGroupImpl distributeServiceGroup;
+    DistributeService distributeService;
     @Autowired
     StaticService staticService;
+    @Autowired
+    MessageFactory messageFactory;
 
     @ApiIgnore
     @PostMapping("/data")
@@ -33,14 +32,17 @@ public class ChatController {
         String type = (String)(json.get("type"));
         System.out.println("get msg" + rawData);
         if(type.equals("message")) {
-            Message message = new Message(json.get("message").toString());
-            message.setDs(distributeServiceSingle);
+            Message message = messageFactory.parseRaw(json.get("message").toString());
             return appendService.appendMessage(message).toString();
         }
         if(type.equals("ack")) {
             Ack ack = new Ack(Long.valueOf(json.get("userId").toString()), Long.valueOf(json.get("latestId").toString()));
-            ack.setDs(distributeServiceSingle);
-            ack.getDs().receiveAck(ack);
+            if(json.get("groupId") != null) {
+                ack.setTargetId(Long.valueOf(json.get("groupId").toString()));
+                distributeService.receiveAckGroup(ack);
+            }
+            else
+                distributeService.receiveAckSingle(ack);
             return "OK";
         }
         return "ERROR";

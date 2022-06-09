@@ -4,6 +4,10 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.dp.account.entity.User;
 import com.dp.account.service.UserService;
+import com.dp.account.service.searchService.AllSearch;
+import com.dp.account.service.searchService.ContactSearch;
+import com.dp.account.service.searchService.SearchService;
+import com.dp.account.service.searchService.StrangerSearch;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +22,13 @@ import java.util.List;
 public class InfoController {
     @Autowired
     UserService userService;
+    @Autowired
+    AllSearch allSearch;
+    @Autowired
+    ContactSearch contactSearch;
+    @Autowired
+    StrangerSearch strangerSearch;
+
 
     @ApiOperation("上传新头像")
     @PostMapping("avatar")
@@ -63,21 +74,36 @@ public class InfoController {
 
     @ApiOperation("获取用户信息")
     @GetMapping("info")
-    public JSONObject getInfo(@ApiParam("搜索类型，可选的值：id, name") String key,
-                              @ApiParam("关键词")String value){
+    public JSONObject getInfo(@ApiParam("搜索范围，可选的值：all, contact, stranger")@RequestParam String scope,
+                              @ApiParam("搜索类型，可选的值：id, name")@RequestParam String key,
+                              @ApiParam("关键词")@RequestParam String value){
         JSONObject ret = new JSONObject();
+        SearchService searchService;
+        switch (scope){
+            case "all":
+                searchService = allSearch; break;
+            case "contact":
+                searchService = contactSearch; break;
+            case "stranger":
+                searchService = strangerSearch; break;
+            default:
+                ret.put("code", 400);
+                ret.put("msg", "wrong scope");
+                return ret;
+        }
+
         Object data;
         try {
             switch (key) {
                 case "name":
-                    data = userService.getUserByName(value);
+                    Long userId = Long.valueOf(StpUtil.getLoginId().toString());
+                    data = searchService.getUserByName(value, userId);
                     break;
                 case "id":
                     data = userService.getInfo(Long.valueOf(value));
                     if(data == null){
                         ret.put("code", 403);
                         ret.put("msg", "cannot find user");
-                        return ret;
                     }
                     break;
                 default:
@@ -85,38 +111,16 @@ public class InfoController {
                     ret.put("msg", "wrong key");
                     return ret;
             }
+            ret.put("code", 200);
+            ret.put("data", data);
         }catch (Exception e){
             ret.put("code", 500);
             ret.put("msg", e.getMessage());
-            return ret;
         }
-        ret.put("code", 200);
-        ret.put("data", data);
         return ret;
     }
 
-    @ApiOperation("获取陌生用户信息")
-    @GetMapping("strangerInfo")
-    public JSONObject getStrangerInfo(@ApiParam("搜索类型，可选的值：目前只有name") String key,
-                                      @ApiParam("关键词")String value){
-        JSONObject ret = new JSONObject();
-        if(key.equals("name")){
-            try{
-                Long userId = Long.valueOf(StpUtil.getLoginId().toString());
-                List data = userService.getStrangerByName(value, userId);
-                ret.put("code", 200);
-                ret.put("data", data);
-            }catch (Exception e){
-                ret.put("code", 500);
-                ret.put("msg", e.getMessage());
-            }
-        }
-        else{
-            ret.put("code", 400);
-            ret.put("msg", "wrong key");
-        }
-        return ret;
-    }
+
 
     @ApiOperation("上传个人签名")
     @PostMapping("sign")
