@@ -6,20 +6,24 @@
 </head>
 
 <body>
-<input id="userId" type="text" /><br/>
-<input id="token" type="text" /><br/>
+userId:     <input id="userId" type="text" /><br/>
+token:      <input id="token" type="text" /><br/>
 <button onclick="connect()">Connect</button><br/><br/>
-<input id="text" type="text" /><br/>
-<input id="to" type="text"/><br/>
+content:    <input id="text" type="text" /><br/>
+receiverId: <input id="to" type="text"/><br/>
 <button onclick="send()">Send</button>
-<button onclick="closeWebSocket()">Close</button><br/>
-<input id="latestId" type="text"/><br/>
-<button onclick="ack()">Send ACK</button>
+<button onclick="sendToGroup()">SendToGroup</button>
+<button onclick="closeWebSocket()">Disconnect</button><br/><br/>
+latestId:   <input id="latestId" type="text"/><br/>
+<button onclick="ack()">Send ACK</button><br/>
+groupId: <input id="groupId" type="text"/><br/>
+<button onclick="ackGroup()">Send GroupACK</button>
 <div id="message"></div>
 </body>
 
 <script type="text/javascript">
     var websocket = null;
+
 
     function getToken() {
         var token = document.getElementById('token').value;
@@ -42,6 +46,7 @@
         //判断当前浏览器是否支持WebSocket, 主要此处要更换为自己的地址
         if ('WebSocket' in window) {
             websocket = new WebSocket("ws://81.70.70.110:4395/ws/" + userId, [getToken()])
+            //websocket = new WebSocket("ws://localhost:4396/ws/1")
         } else {
             alert('Not support websocket')
         }
@@ -92,10 +97,26 @@
         websocket.send(JSON.stringify(message));
     }
 
+    function sendToGroup() {
+        let content = document.getElementById('text').value;
+        let userId = document.getElementById('userId').value;
+        let groupId = document.getElementById('to').value;
+        let message = {"type": "message", "message": {"content": content, "rawId": 0, "senderId": userId, "groupId": groupId}}
+        websocket.send(JSON.stringify(message));
+    }
+
     function ack(){
         let latestId = document.getElementById('latestId').value;
         let userId = document.getElementById('userId').value;
         let message = {"type": "ack", "userId": userId, "latestId": latestId}
+        websocket.send(JSON.stringify(message));
+    }
+
+    function ackGroup(){
+        let latestId = document.getElementById('latestId').value;
+        let userId = document.getElementById('userId').value;
+        let groupId = document.getElementById('groupId').value;
+        let message = {"type": "ack", "userId": userId, "latestId": latestId, "groupId": groupId}
         websocket.send(JSON.stringify(message));
     }
 </script>

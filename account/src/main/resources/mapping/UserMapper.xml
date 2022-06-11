@@ -79,4 +79,10 @@
         set sign = #{sign}
         where id = #{userId}
     </update>
+
+    <update id="uploadName">
+        update user
+        set name = #{name}
+        where id = #{userId}
+    </update>
 </mapper>

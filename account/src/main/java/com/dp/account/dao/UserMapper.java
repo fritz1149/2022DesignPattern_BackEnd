@@ -19,4 +19,5 @@ public interface UserMapper {
     public Long uploadAvatar(@Param("userId") Long userId, @Param("avatar") String avatar);
     public Long uploadSign(@Param("userId") Long userId, @Param("sign") String value);
     public Long uploadPassword(@Param("userId") Long userId, @Param("password") String password, @Param("salt") String salt);
+    public Long uploadName(@Param("userId") Long userId, @Param("name") String name);
 }

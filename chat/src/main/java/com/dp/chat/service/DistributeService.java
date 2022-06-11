@@ -12,6 +12,7 @@ import com.dp.chat.entity.Message.Message;
 import com.dp.chat.entity.Message.SingleMessage;
 import com.dp.common.Enum.State;
 import com.dp.common.Name;
+import com.dp.common.service.CheckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +28,12 @@ public class DistributeService {
     private SocketDao socketDao;
     @Autowired
     private StorageDao storageDao;
+    @Autowired
+    private CheckService checkService;
 
     public void pushSingle(Message message, Long receiverId){
+        if(!checkService.isValidUser(receiverId))
+            return;
         JSONArray res = cacheDao.appendToCache(message, receiverId);
         if (res.get(0).toString().equals("true"))
             if (socketDao.sendMessages(receiverId,
@@ -50,19 +55,23 @@ public class DistributeService {
     }
 
     public void distributeContactRequest(ContactRequest message){
+        message.setTime(new Timestamp(new Date().getTime()));
         Long receiverId = message.getReceiverId();
         pushSingle(message, receiverId);
     }
 
     public void distributeGroup(GroupMessage message){
+        Long groupId = message.getGroupId();
+        if(!checkService.isValidGroup(groupId))
+            return;
+
         message.setTime(new Timestamp(new Date().getTime()));
         JSONObject ret = storageDao.saveToStorage(message);
         Long lastId = Long.valueOf(ret.get("number").toString());
         message.setMessageId(lastId);
 
         JSONArray res = cacheDao.appendToGroupCache(message, message.getGroupId());
-        Long serverLatestId = res.getLong(0) - 1L;
-        Long groupId = message.getGroupId();
+        Long serverLatestId = res.getLong(0) - 2L;
         for(Object a : cacheDao.getGroupOnlineMembers(message.getGroupId())){
             Long userId = Long.parseLong(a.toString());
             socketDao.sendGroupMessages(userId, serverLatestId, groupId, new JSONArray().fluentAdd(message));

@@ -6,6 +6,10 @@ spring:
       config:
         server-addr: localhost:8848
         file-extension: yaml
+  datasource:
+    url: jdbc:mysql://47.94.225.40:3306/im?serverTimezone=GMT
+    username: MS
+    password: XZRyNBkzea6iKHPA
   redis:
     host: 47.94.225.40
     port: 6379

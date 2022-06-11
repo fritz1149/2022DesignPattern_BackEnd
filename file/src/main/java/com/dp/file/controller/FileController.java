@@ -1,5 +1,6 @@
 package com.dp.file.controller;
 
+import com.dp.common.service.CheckService;
 import com.dp.file.entity.MyFile;
 import com.dp.file.service.FileService;
 import io.swagger.annotations.ApiOperation;
@@ -29,7 +30,8 @@ import java.util.Map;
 public class FileController {
     @Autowired
     FileService fileService;
-    String serverAddress = "http://82.156.59.244/";
+    @Autowired
+    CheckService checkService;
     @Value("${file-path}")
     private String FilePath;
 
@@ -98,6 +100,9 @@ public class FileController {
     @ApiOperation("下载文件")
     @GetMapping("/download/{filePath}")
     public ResponseEntity<FileSystemResource> downloadFile(@ApiParam("文件名") @PathVariable String filePath) {
+        if(!checkService.isValidFile(filePath)){
+            return null;
+        }
         File file = new File(FilePath, filePath);
         System.out.println(file.getAbsolutePath());
         if (!file.exists()) {
@@ -120,7 +125,8 @@ public class FileController {
 
     @ApiOperation("文件信息")
     @GetMapping("/info")
-    public Object getFileInfo(@RequestParam("type") String type, @RequestParam("key") String key) {
+    public Object getFileInfo(@ApiParam("取值：image, file")@RequestParam("type") String type,
+                              @ApiParam("upload接口回应的savedPath字段")@RequestParam("key") String key) {
         Map<String, Object> result = new HashMap<>();
         try {
             if (type.equals("fileAbsolutePath")) {//根据绝对地址查找单个文件

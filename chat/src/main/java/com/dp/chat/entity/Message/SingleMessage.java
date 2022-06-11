@@ -23,6 +23,7 @@ public class SingleMessage implements Message{
     private Long receiverId;
     private String pairName;
     private String content;
+    private String contentType;
     private Timestamp time;
 
     public SingleMessage(){}
@@ -81,5 +82,33 @@ public class SingleMessage implements Message{
 
     public Timestamp getTime() {
         return time;
+    }
+
+    public void setRawId(Long rawId) {
+        this.rawId = rawId;
+    }
+
+    public void setSenderId(Long senderId) {
+        this.senderId = senderId;
+    }
+
+    public void setReceiverId(Long receiverId) {
+        this.receiverId = receiverId;
+    }
+
+    public void setPairName(String pairName) {
+        this.pairName = pairName;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }

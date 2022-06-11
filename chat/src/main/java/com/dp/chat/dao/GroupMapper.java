@@ -17,4 +17,6 @@ public interface GroupMapper {
     List<Group> getGroupByName(@Param("name") String name);
     List<Group> getStrangerGroupByName(@Param("name") String name, @Param("userId") Long userId);
     List<Group> getMyGroupByName(@Param("name") String name, @Param("userId") Long userId);
+    List<Group> getMyGroups(@Param("userId") Long userId);
+    Long uploadAvatar(@Param("groupId") Long groupId, @Param("avatar") String avatar);
 }

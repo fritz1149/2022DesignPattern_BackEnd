@@ -3,6 +3,7 @@ package com.dp.chat.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.dp.chat.dao.CacheDao;
 import com.dp.chat.service.StaticService;
+import com.dp.common.service.CheckService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ContactController {
     @Autowired
     StaticService staticService;
+    @Autowired
+    CheckService checkService;
 
     @ApiOperation("加好友")
     @PostMapping("/add")
@@ -41,6 +44,10 @@ public class ContactController {
                 ret.put("code", 400);
                 ret.put("msg", "type参数不合法");
             }
+            else if(!checkService.isValidUser(userId) || !checkService.isValidUser(contactId)){
+                ret.put("code", 400);
+                ret.put("msg", "不合法的用户id或对方id");
+            }
             else if(staticService.beContact(userId, contactId, type))
                 ret.put("code", 200);
             else {
@@ -48,6 +55,7 @@ public class ContactController {
                 ret.put("msg", "已经是好友");
             }
         }catch (Exception e){
+            e.printStackTrace();
             return ret.fluentPut("code", 500);
         }
         return ret;
@@ -58,8 +66,16 @@ public class ContactController {
     public JSONObject removeContact(@RequestParam Long userId, @RequestParam Long contactId){
         JSONObject ret = new JSONObject();
         try{
-            ret.put("code", 200);
-            ret.put("msg", staticService.removeContact(userId, contactId));
+            if(!checkService.isValidUser(userId) || !checkService.isValidUser(contactId)){
+                ret.put("code", 400);
+                ret.put("msg", "不合法的用户id或对方id");
+            }
+            else if(staticService.removeContact(userId, contactId))
+                ret.put("code", 200);
+            else{
+                ret.put("code", 403);
+                ret.put("msg", "不是好友");
+            }
         }catch (Exception e){
             return ret.fluentPut("code", 500);
         }
@@ -71,8 +87,14 @@ public class ContactController {
     public JSONObject getContacts(@RequestParam Long userId){
         JSONObject ret = new JSONObject();
         try{
-            ret.put("code", 200);
-            ret.put("data", staticService.getContacts(userId));
+            if(!checkService.isValidUser(userId)){
+                ret.put("code", 400);
+                ret.put("msg", "不合法的用户id");
+            }
+            else{
+                ret.put("code", 200);
+                ret.put("data", staticService.getContacts(userId));
+            }
         }catch (Exception e){
             return ret.fluentPut("code", 500);
         }
@@ -85,7 +107,11 @@ public class ContactController {
                                  @ApiParam("备注") @RequestParam String remark){
         JSONObject ret = new JSONObject();
         try {
-            if(staticService.setRemark(userId, contactId, remark).equals(1L)){
+            if(!checkService.isValidUser(userId) || !checkService.isValidUser(contactId)){
+                ret.put("code", 400);
+                ret.put("msg", "不合法的用户id或对方id");
+            }
+            else if(staticService.setRemark(userId, contactId, remark).equals(1L)){
                 ret.put("code", 200);
                 ret.put("msg", "OK");
             }
@@ -106,13 +132,17 @@ public class ContactController {
                                    @ApiParam("分组") @RequestParam String group){
         JSONObject ret = new JSONObject();
         try {
-            if(staticService.setGroup(userId, contactId, group).equals(1L)){
-                ret.put("code", 200);
-                ret.put("msg", "OK");
+            if(!checkService.isValidUser(userId) || !checkService.isValidUser(contactId)){
+                ret.fluentPut("code", 400)
+                    .fluentPut("msg", "不合法的用户id或对方id");
+            }
+            else if(staticService.setGroup(userId, contactId, group).equals(1L)){
+                ret.fluentPut("code", 200)
+                    .fluentPut("msg", "OK");
             }
             else{
-                ret.put("code", 403);
-                ret.put("msg", "非好友关系");
+                ret.fluentPut("code", 403)
+                    .fluentPut("msg", "非好友关系");
             }
         }catch (Exception e){
             ret.put("code", 500);

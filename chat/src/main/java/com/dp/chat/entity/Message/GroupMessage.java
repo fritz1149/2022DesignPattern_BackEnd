@@ -25,6 +25,7 @@ public class GroupMessage implements Message{
     private Long senderId;
     private Long groupId;
     private String content;
+    private String contentType;
     private Timestamp time;
 
     public GroupMessage() {
@@ -83,5 +84,13 @@ public class GroupMessage implements Message{
 
     public void setTime(Timestamp time) {
         this.time = time;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }

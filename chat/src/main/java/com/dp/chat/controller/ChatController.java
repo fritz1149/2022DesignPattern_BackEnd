@@ -8,6 +8,7 @@ import com.dp.chat.entity.Message.MessageFactory;
 import com.dp.chat.service.AppendService;
 import com.dp.chat.service.DistributeService;
 import com.dp.chat.service.StaticService;
+import com.dp.common.service.CheckService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ public class ChatController {
     StaticService staticService;
     @Autowired
     MessageFactory messageFactory;
+    @Autowired
+    CheckService checkService;
 
     @ApiIgnore
     @PostMapping("/data")
@@ -55,6 +58,13 @@ public class ChatController {
         return appendService.stopToHold(pairName).toString();
     }
 
+    @ApiIgnore
+    @PostMapping("/append")
+    public String append(@RequestParam String rawMessage){
+        System.out.println("forward append: " + rawMessage);
+        return receiveRawData(rawMessage);
+    }
+
     @ApiOperation("陌生人聊天之前先调这个接口")
     @PostMapping("/startChat")
     public JSONObject startChat(@ApiParam("自己id") @RequestParam Long userId1, @ApiParam("对方id") @RequestParam Long userId2){
@@ -69,8 +79,18 @@ public class ChatController {
                              @ApiParam("对方id") @RequestParam Long userId2,
                              @ApiParam("每页消息数") @RequestParam Integer pageSize,
                              @ApiParam("第几页") @RequestParam Integer pageNum){
-        return new JSONObject()
-                .fluentPut("code", 200)
-                .fluentPut("data", staticService.getChatLog(userId1, userId2, pageSize, pageNum).toJSONString());
+        JSONObject ret = new JSONObject();
+        try{
+            if(!checkService.isValidUser(userId1) || !checkService.isValidUser(userId2))
+                ret.fluentPut("code", 400)
+                        .fluentPut("msg", "不合法用户id");
+            else
+                ret.fluentPut("code", 200)
+                        .fluentPut("data", staticService.getChatLog(userId1, userId2, pageSize, pageNum).toJSONString());
+        }catch (Exception e){
+            e.printStackTrace();
+            ret.fluentPut("code", 500);
+        }
+        return ret;
     }
 }

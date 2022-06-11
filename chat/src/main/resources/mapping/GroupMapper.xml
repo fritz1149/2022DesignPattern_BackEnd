@@ -52,6 +52,18 @@
             on a.id = b.group_id
     </select>
 
+    <select id="getMyGroups" resultMap="groupMap">
+        select id, name, avatar
+        from
+            (select id, name, avatar
+             from `group`) as a
+                join
+            (select group_id
+             from member
+             where user_id = #{userId}) as b
+            on a.id = b.group_id
+    </select>
+
     <insert id="addMember">
         insert into member(user_id, group_id)
         values(#{userId}, #{groupId})
@@ -61,4 +73,10 @@
         delete from member
         where user_id = #{userId} and group_id = #{groupId}
     </delete>
+
+    <update id="uploadAvatar">
+        update `group`
+        set avatar = #{avatar}
+        where id = #{groupId}
+    </update>
 </mapper>

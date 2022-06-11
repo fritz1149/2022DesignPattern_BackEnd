@@ -66,6 +66,10 @@ public class CacheDao {
         redisTemplate.boundSetOps(Name.groupOnlineList(groupId)).add(userId.toString());
     }
 
+    public void removeOnlineToGroup(Long userId, Long groupId){
+        redisTemplate.boundSetOps(Name.groupOnlineList(groupId)).remove(userId.toString());
+    }
+
     public JSONArray shouldPush(Long groupId, Long clientLatestId){
         return execLuaScript(new ResourceScriptSource(new ClassPathResource("redis/pushGroup.lua")),
                 Name.groupListName(groupId), clientLatestId.toString());

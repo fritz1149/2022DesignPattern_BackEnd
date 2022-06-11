@@ -83,6 +83,12 @@ public class UserService{
         return userMapper.uploadPassword(userId, password, salt);
     }
 
+    public Long uploadName(Long userId, String name){
+        Assert.notNull(userId, "userId null");
+        Assert.notNull(name, "name null");
+        return userMapper.uploadName(userId, name);
+    }
+
     public User getInfo(Long userId){
         Assert.notNull(userId, "userId null");
         User user = userMapper.getUserById(userId);

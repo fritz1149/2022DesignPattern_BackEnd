@@ -7,6 +7,7 @@ import com.dp.chat.service.searchService.AllSearch;
 import com.dp.chat.service.searchService.MyGroupSearch;
 import com.dp.chat.service.searchService.SearchService;
 import com.dp.chat.service.searchService.StrangerSearch;
+import com.dp.common.service.CheckService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +26,45 @@ public class GroupController {
     MyGroupSearch myGroupSearch;
     @Autowired
     StrangerSearch strangerSearch;
+    @Autowired
+    CheckService checkService;
 
     @ApiOperation("创建群组")
     @PostMapping("/create")
     public JSONObject createGroup(@RequestParam String groupName, @RequestParam Long userId){
-        return new JSONObject()
-                .fluentPut("code", 200)
-                .fluentPut("data", new JSONObject().
-                        fluentPut("groupId", staticService.claimGroup(groupName, userId)))
-                ;
+        JSONObject ret = new JSONObject();
+        try{
+            if(!checkService.isValidUser(userId))
+                ret.fluentPut("code", 400)
+                    .fluentPut("msg", "不合法用户id");
+            else
+                ret.fluentPut("code", 200)
+                    .fluentPut("data",
+                        new JSONObject().fluentPut("groupId", staticService.claimGroup(groupName, userId))
+                    );
+        }catch (Exception e){
+            e.printStackTrace();
+            ret.put("code", 500);
+        }
+        return ret;
+    }
+
+    @ApiOperation("获取加入的群组列表")
+    @GetMapping("/group")
+    public JSONObject getGroups(@RequestParam Long userId){
+        JSONObject ret = new JSONObject();
+        try{
+            if(!checkService.isValidUser(userId))
+                ret.fluentPut("code", 400)
+                        .fluentPut("msg", "不合法用户id");
+            else
+                ret.fluentPut("code", 200)
+                        .fluentPut("data", staticService.getMyGroups(userId));
+        }catch (Exception e){
+            e.printStackTrace();
+            ret.put("code", 500);
+        }
+        return ret;
     }
 
     @ApiOperation("获取群组信息")
@@ -87,20 +118,70 @@ public class GroupController {
     @ApiOperation("加入群组")
     @PostMapping("/join")
     public JSONObject joinGroup(@RequestParam Long userId, @RequestParam Long groupId){
-        return new JSONObject()
-                .fluentPut("code", 200)
-                .fluentPut("msg", staticService.joinGroup(userId, groupId))
-                ;
+        JSONObject ret = new JSONObject();
+        try{
+            if(!checkService.isValidUser(userId))
+                ret.fluentPut("code", 400)
+                        .fluentPut("msg", "不合法用户id");
+            else if(!checkService.isValidGroup(groupId))
+                ret.fluentPut("code", 400)
+                        .fluentPut("msg", "不合法群组id");
+            else
+                ret.fluentPut("code", 200)
+                        .fluentPut("data", staticService.joinGroup(userId, groupId));
+        }catch (Exception e){
+            e.printStackTrace();
+            ret.put("code", 500);
+        }
+        return ret;
     }
 
     @ApiOperation("离开群组")
     @PostMapping("/leave")
     public JSONObject leaveGroup(@RequestParam Long userId, @RequestParam Long groupId){
-        return new JSONObject()
-                .fluentPut("code", 200)
-                .fluentPut("msg", staticService.leaveGroup(userId, groupId))
-                ;
+        JSONObject ret = new JSONObject();
+        try{
+            if(!checkService.isValidUser(userId))
+                ret.fluentPut("code", 400)
+                        .fluentPut("msg", "不合法用户id");
+            else if(!checkService.isValidGroup(groupId))
+                ret.fluentPut("code", 400)
+                        .fluentPut("msg", "不合法群组id");
+            else if(staticService.leaveGroup(userId, groupId))
+                ret.fluentPut("code", 200);
+            else
+                ret.fluentPut("code", 403)
+                        .fluentPut("msg", "用户不在群组中");
+        }catch (Exception e){
+            e.printStackTrace();
+            ret.put("code", 500);
+        }
+        return ret;
     }
 
-
+    @ApiOperation("上传新头像")
+    @PostMapping("avatar")
+    public JSONObject uploadAvatar(@RequestParam Long groupId, @RequestParam String avatar){
+        JSONObject ret = new JSONObject();
+        try {
+            if(!checkService.isValidGroup(groupId))
+                ret.fluentPut("code", 400)
+                        .fluentPut("msg", "不合法群组id");
+            else if(!checkService.isValidFile(avatar))
+                ret.fluentPut("code", 400)
+                        .fluentPut("msg", "不合法文件路径");
+            else if(staticService.updateGroupAvatar(groupId, avatar)){
+                ret.put("code", 200);
+                ret.put("msg", "OK");
+            }
+            else{
+                ret.put("code", 403);
+                ret.put("msg", "群组不存在");
+            }
+        }catch (Exception e){
+            ret.put("code", 500);
+            ret.put("msg", e.getMessage());
+        }
+        return ret;
+    }
 }

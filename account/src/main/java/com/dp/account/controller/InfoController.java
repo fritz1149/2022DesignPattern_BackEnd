@@ -120,8 +120,6 @@ public class InfoController {
         return ret;
     }
 
-
-
     @ApiOperation("上传个人签名")
     @PostMapping("sign")
     public JSONObject uploadSign(@ApiParam("签名") @RequestParam String sign){
@@ -129,6 +127,27 @@ public class InfoController {
         try {
             Long userId = Long.valueOf(StpUtil.getLoginId().toString());
             if(userService.uploadField(userId, sign).equals(1L)){
+                ret.put("code", 200);
+                ret.put("msg", "OK");
+            }
+            else{
+                ret.put("code", 403);
+                ret.put("msg", "用户不存在");
+            }
+        }catch (Exception e){
+            ret.put("code", 500);
+            ret.put("msg", e.getMessage());
+        }
+        return ret;
+    }
+
+    @ApiOperation("上传个人用户名")
+    @PostMapping("name")
+    public JSONObject uploadName(@ApiParam("新名字") @RequestParam String name){
+        JSONObject ret = new JSONObject();
+        try {
+            Long userId = Long.valueOf(StpUtil.getLoginId().toString());
+            if(userService.uploadName(userId, name).equals(1L)){
                 ret.put("code", 200);
                 ret.put("msg", "OK");
             }

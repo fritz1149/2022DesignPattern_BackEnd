@@ -11,6 +11,7 @@ import com.dp.chat.entity.Group;
 import com.dp.chat.entity.Message.MessageFactory;
 import com.dp.chat.entity.UserInfo;
 import com.dp.common.Name;
+import com.dp.common.dao.ExistMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
@@ -35,7 +36,6 @@ public class StaticService {
     @Autowired
     MessageFactory messageFactory;
 
-
     public String claimStorage(Long userId1, Long userId2){
         Assert.notNull(userId1, "userId null");
         Assert.notNull(userId2, "userId null");
@@ -51,7 +51,9 @@ public class StaticService {
     }
 
     public Long claimGroup(String groupName, Long userId){
-        return storageDao.claimGroup(groupName, userId);
+        Long groupId = storageDao.claimGroup(groupName, userId);
+        cacheDao.addOnlineToGroup(userId, groupId);
+        return groupId;
     }
 
     public Group getGroup(Long groupId){
@@ -67,23 +69,18 @@ public class StaticService {
         return "OK";
     }
 
-    public String leaveGroup(Long userId, Long groupId){
+    public Boolean leaveGroup(Long userId, Long groupId){
         Assert.notNull(userId, "userId null");
         Assert.notNull(groupId, "groupId null");
         Long linesAffected = groupMapper.deleteMember(userId, groupId);
-        if(linesAffected == 1L)
-            return "OK";
-        else if(linesAffected == 0L)
-            return "user not in the group";
-        else
-            return "error";
+        cacheDao.removeOnlineToGroup(userId, groupId);
+        return linesAffected == 1L;
     }
 
     public String addContact(Long userId, Long contactId){
         Assert.notNull(userId, "userId null");
         Assert.notNull(contactId, "contactId null");
         Long linesAffected = contactMapper.addContact(userId, contactId);
-        System.out.println(linesAffected);
         if(linesAffected == 1L || linesAffected == 2L)
             return "OK";
         else if(linesAffected == 0L)
@@ -92,21 +89,21 @@ public class StaticService {
             return "error";
     }
 
-    public String removeContact(Long userId, Long contactId){
+    public Boolean removeContact(Long userId, Long contactId){
         Assert.notNull(userId, "userId null");
         Assert.notNull(contactId, "contactId null");
         Long linesAffected = contactMapper.deleteContact(userId, contactId);
-        if(linesAffected == 1L)
-            return "OK";
-        else if(linesAffected == 0L)
-            return "not contact";
-        else
-            return "error";
+        return linesAffected == 1L;
     }
 
     public List<UserInfo> getContacts(Long userId){
         Assert.notNull(userId, "userId null");
         return contactMapper.getContacts(userId);
+    }
+
+    public List<Group> getMyGroups(Long userId){
+        Assert.notNull(userId, "userId null");
+        return groupMapper.getMyGroups(userId);
     }
 
     public Long setRemark(Long userId, Long contactId, String remark){
@@ -135,5 +132,10 @@ public class StaticService {
             appendService.appendMessage(messageFactory.contactRequest(userId, contactId, type));
             return true;
         }
+    }
+
+    public Boolean updateGroupAvatar(Long groupId, String avatar){
+        Assert.notNull(groupId, "groupId null");
+        return groupMapper.uploadAvatar(groupId, avatar) == 1L;
     }
 }

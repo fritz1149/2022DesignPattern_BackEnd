@@ -9,14 +9,22 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <version>0.0.1-SNAPSHOT</version>
+
+    <artifactId>common</artifactId>
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
     </dependencies>
-
-    <artifactId>common</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
