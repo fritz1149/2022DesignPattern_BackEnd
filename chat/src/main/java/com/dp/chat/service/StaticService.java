@@ -43,8 +43,7 @@ public class StaticService {
         return storageDao.claimStorage(pairName);
     }
 
-    public JSONObject getChatLog(Long userId1, Long userId2, Integer pageSize, Integer pageNum){
-        String pairName = Name.pairName(userId1, userId2);
+    public JSONObject getChatLog(String pairName, Integer pageSize, Integer pageNum){
         Integer offset = (pageNum - 1) * pageSize;
         Integer limit = pageSize;
         return storageDao.getLog(pairName, offset, limit);

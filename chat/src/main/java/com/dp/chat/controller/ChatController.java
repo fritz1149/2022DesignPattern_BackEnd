@@ -8,6 +8,7 @@ import com.dp.chat.entity.Message.MessageFactory;
 import com.dp.chat.service.AppendService;
 import com.dp.chat.service.DistributeService;
 import com.dp.chat.service.StaticService;
+import com.dp.common.Name;
 import com.dp.common.service.CheckService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -73,8 +74,8 @@ public class ChatController {
                 .fluentPut("msg", staticService.claimStorage(userId1, userId2));
     }
 
-    @ApiOperation("聊天记录")
-    @GetMapping("/log")
+    @ApiOperation("单聊聊天记录")
+    @GetMapping("/singleLog")
     public JSONObject getLog(@ApiParam("自己id") @RequestParam Long userId1,
                              @ApiParam("对方id") @RequestParam Long userId2,
                              @ApiParam("每页消息数") @RequestParam Integer pageSize,
@@ -86,7 +87,27 @@ public class ChatController {
                         .fluentPut("msg", "不合法用户id");
             else
                 ret.fluentPut("code", 200)
-                        .fluentPut("data", staticService.getChatLog(userId1, userId2, pageSize, pageNum).toJSONString());
+                        .fluentPut("data", staticService.getChatLog(Name.pairName(userId1, userId2), pageSize, pageNum).toJSONString());
+        }catch (Exception e){
+            e.printStackTrace();
+            ret.fluentPut("code", 500);
+        }
+        return ret;
+    }
+
+    @ApiOperation("群组聊天记录")
+    @GetMapping("/groupLog")
+    public JSONObject getLog2(@ApiParam("群组id") @RequestParam Long groupId,
+                             @ApiParam("每页消息数") @RequestParam Integer pageSize,
+                             @ApiParam("第几页") @RequestParam Integer pageNum){
+        JSONObject ret = new JSONObject();
+        try{
+            if(!checkService.isValidGroup(groupId))
+                ret.fluentPut("code", 400)
+                        .fluentPut("msg", "不合法群组id");
+            else
+                ret.fluentPut("code", 200)
+                        .fluentPut("data", staticService.getChatLog(groupId.toString(), pageSize, pageNum).toJSONString());
         }catch (Exception e){
             e.printStackTrace();
             ret.fluentPut("code", 500);
