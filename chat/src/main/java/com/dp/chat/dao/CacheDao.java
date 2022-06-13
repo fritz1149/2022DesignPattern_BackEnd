@@ -53,9 +53,9 @@ public class CacheDao {
                 lastId, listName, clientLatestId.toString());
     }
 
-    public JSONArray checkPush(String listName, String stateName, String lastId){
-        return execLuaScript(new ResourceScriptSource(new ClassPathResource("redis/push.lua")),
-                listName, stateName, lastId);
+    public JSONArray checkPush(String listName, String stateName, String lastId, Long clientLatestId){
+        return execLuaScript(new ResourceScriptSource(new ClassPathResource("redis/pushNew.lua")),
+                listName, stateName, lastId, clientLatestId.toString());
     }
 
     public Set getGroupOnlineMembers(Long groupId){

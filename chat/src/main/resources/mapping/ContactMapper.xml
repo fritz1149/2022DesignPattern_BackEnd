@@ -30,7 +30,7 @@
     </select>
 
     <select id="getUserInfo" resultMap="userInfo">
-        select avatar, sign
+        select id as contact_id, avatar, name, sign
         from user
         where id = #{userId}
     </select>

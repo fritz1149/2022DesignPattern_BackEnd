@@ -1,4 +1,4 @@
-package com.dp.chat.config;
+package com.dp.common.config;
 
 import org.springframework.core.convert.converter.Converter;
 

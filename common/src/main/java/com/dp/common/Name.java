@@ -47,4 +47,8 @@ public class Name {
     public static String groupOnlineList(Long groupId){
         return "online" + groupId;
     }
+
+    public static String storageName(Long userId){
+        return "storage" + userId;
+    }
 }

@@ -126,8 +126,10 @@ public class StaticService {
         if(relation == 2L)
             return false; // 已经是好友关系
         else{
-            if(type.equals("response"))
+            if(type.equals("response")) {
                 addContact(userId, contactId);
+                claimStorage(userId, contactId);
+            }
             appendService.appendMessage(messageFactory.contactRequest(userId, contactId, type));
             return true;
         }

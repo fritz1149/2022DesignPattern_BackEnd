@@ -1,11 +1,13 @@
 package com.dp.account;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.dp.account", "com.dp.common.config"})
+@MapperScan({"com.dp.account.dao", "com.dp.common.dao"})
 @EnableDiscoveryClient
 @EnableFeignClients
 public class AccountApplication {

@@ -20,6 +20,7 @@ import com.dp.common.Enum.State;
 public class WebsocketService {
     private Long userId;
     private Session session;
+    private Boolean askToClose = false;
     private static final ConcurrentHashMap<Long, WebsocketService> webSocketServices=new ConcurrentHashMap<>();
     private static final AtomicInteger onlineCount = new AtomicInteger();
     private static ColonyDao colonyDao;
@@ -43,9 +44,11 @@ public class WebsocketService {
         onlineCount.decrementAndGet();
         System.out.println("session close. online: " + onlineCount + " userId: " + userId);
         colonyDao.deleteConnect(userId);
+//        if(!askToClose)
 //        colonyDao.claimOffline(userId);
     }
     public void close() throws IOException{
+        askToClose = true;
         session.close();
     }
     @OnMessage

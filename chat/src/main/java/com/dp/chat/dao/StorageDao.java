@@ -25,9 +25,9 @@ public class StorageDao {
     @Autowired
     private GroupMapper groupMapper;
 
-    public JSONObject saveToStorage(Message message){
+    public JSONObject saveToStorage(Message message, String storageName){
         Query query = new Query();
-        query.addCriteria(Criteria.where("pair_name").is(message.getPairName()));
+        query.addCriteria(Criteria.where("pair_name").is(storageName));
         query.fields().exclude("_id").include("number");
 
         Update update = new Update();

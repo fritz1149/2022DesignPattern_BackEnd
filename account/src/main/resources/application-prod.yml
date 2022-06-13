@@ -7,11 +7,12 @@ spring:
         server-addr: 192.168.15.43:8848
         file-extension: yaml
   datasource:
-    url: jdbc:mysql://192.168.0.162/im?serverTimezone=GMT
+    url: jdbc:mysql://192.168.0.162/im?socketTimeout=60000&connectTimeout=30000&serverTimezone=GMT
     username: root
     password: 123456
     hikari:
       maximum-pool-size: 60
+      max-lifetime: 400000
   redis:
     host: 192.168.2.221
     port: 6379
@@ -22,6 +23,18 @@ spring:
         max-idle: 8
         max-active: 8
         max-wait: -1
+  data:
+    mongodb:
+      database: IM
+      host: 192.168.7.115
+      port: 27017
+      username: admin
+      password: admin
+      authentication-database: admin
+      option:
+        max-connection-idle-time: 3600000 #空闲一个小时清理一下
+        socket-keep-alive: true
+        min-connection-per-host: 1
 
 logging:
   file:

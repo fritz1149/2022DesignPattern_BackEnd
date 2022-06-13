@@ -21,6 +21,14 @@ spring:
         max-idle: 8
         max-active: 8
         max-wait: -1
+  data:
+    mongodb:
+      database: IM
+      host: 47.94.225.40
+      port: 27017
+      username: admin
+      password: admin
+      authentication-database: admin
 logging:
   file:
     name: account.log

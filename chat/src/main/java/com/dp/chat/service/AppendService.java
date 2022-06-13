@@ -40,6 +40,7 @@ public class AppendService {
                         message.distribute(distributeService);
                         if (pairs.get(pairName).decrementAndGet() <= 0)
                             stopToHold(pairName);
+//                        System.out.println("contactRequest: " + message.getPairName());
                     }catch (NullPointerException e){
                         e.printStackTrace();
                     }catch (InterruptedException e) {

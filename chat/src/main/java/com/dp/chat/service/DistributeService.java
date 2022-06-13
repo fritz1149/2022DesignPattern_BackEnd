@@ -34,6 +34,7 @@ public class DistributeService {
     public void pushSingle(Message message, Long receiverId){
         if(!checkService.isValidUser(receiverId))
             return;
+        storageDao.saveToStorage(message, Name.storageName(receiverId));
         JSONArray res = cacheDao.appendToCache(message, receiverId);
         if (res.get(0).toString().equals("true"))
             if (socketDao.sendMessages(receiverId,
@@ -44,7 +45,7 @@ public class DistributeService {
 
     public void distributeSingle(SingleMessage message){
         message.setTime(new Timestamp(new Date().getTime()));
-        JSONObject ret = storageDao.saveToStorage(message);
+        JSONObject ret = storageDao.saveToStorage(message, message.getPairName());
         Long lastId = Long.valueOf(ret.get("number").toString());
         message.setMessageId(lastId);
 
@@ -66,7 +67,7 @@ public class DistributeService {
             return;
 
         message.setTime(new Timestamp(new Date().getTime()));
-        JSONObject ret = storageDao.saveToStorage(message);
+        JSONObject ret = storageDao.saveToStorage(message, message.getPairName());
         Long lastId = Long.valueOf(ret.get("number").toString());
         message.setMessageId(lastId);
 
@@ -78,6 +79,14 @@ public class DistributeService {
         }
     }
 
+    private void parseRaw(JSONArray messages){
+        ListIterator<Object> iter = messages.listIterator();
+        while (iter.hasNext()) {
+            String json = iter.next().toString();
+            iter.set(JSONObject.parse(json));
+        }
+    }
+
     public void receiveAckSingle(Ack ack){
         Long userId = ack.getUserId();
         Long clientLatestId = ack.getClientLatestId();
@@ -86,16 +95,17 @@ public class DistributeService {
         String stateName = Name.stateName(userId);
 
         cacheDao.popCache(lastId, listName, clientLatestId);
-        JSONArray res = cacheDao.checkPush(listName, stateName, lastId);
+        JSONArray res = cacheDao.checkPush(listName, stateName, lastId, clientLatestId);
 
-        if(res.get(0).toString().equals("true")) {
+        String hint = res.get(0).toString();
+        if(hint.equals("true")) {
             JSONArray messages = res.getJSONArray(2);
-            ListIterator<Object> iter = messages.listIterator();
-            while (iter.hasNext()) {
-                String json = iter.next().toString();
-                iter.set(JSONObject.parse(json));
-            }
+            parseRaw(messages);
             socketDao.sendMessages(userId, Long.valueOf(res.get(1).toString()), messages);
+        }
+        else if(hint.equals("lost")){
+            socketDao.sendMessages(userId, clientLatestId,
+                    storageDao.getLog(Name.storageName(userId), Integer.valueOf(clientLatestId.toString()), 10).getJSONArray("messages"));
         }
         else
             socketDao.sendInfo(userId, clientLatestId, "consistent");
@@ -106,11 +116,7 @@ public class DistributeService {
         Long groupId = ack.getTargetId();
         Long clientLatestId = ack.getClientLatestId();
         JSONArray messages = cacheDao.shouldPush(groupId, clientLatestId);
-        ListIterator<Object> iter = messages.listIterator();
-        while (iter.hasNext()) {
-            String json = iter.next().toString();
-            iter.set(JSONObject.parse(json));
-        }
+        parseRaw(messages);
         socketDao.sendGroupMessages(userId, clientLatestId, groupId, messages);
     }
 }

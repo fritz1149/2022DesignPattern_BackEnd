@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.0.162:3306/im?serverTimezone=GMT
+    url: jdbc:mysql://192.168.0.162:3306/im?socketTimeout=60000&connectTimeout=30000&serverTimezone=GMT
     username: root
     password: 123456
   #    url: jdbc:mysql://82.156.59.244:3306/mytest?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai

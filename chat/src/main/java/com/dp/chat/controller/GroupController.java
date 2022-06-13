@@ -1,7 +1,6 @@
 package com.dp.chat.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dp.chat.dao.GroupMapper;
 import com.dp.chat.service.StaticService;
 import com.dp.chat.service.searchService.AllSearch;
 import com.dp.chat.service.searchService.MyGroupSearch;
