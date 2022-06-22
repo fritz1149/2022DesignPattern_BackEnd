@@ -35,7 +35,7 @@ public class ChatController {
         JSONObject json = JSON.parseObject(rawData);
         String type = (String)(json.get("type"));
         System.out.println("get msg" + rawData);
-        if(type.equals("message")) {
+        if(type == null || type.equals("message") || type.equals("request") || type.equals("response")) {
             Message message = messageFactory.parseRaw(json.get("message").toString());
             return appendService.appendMessage(message).toString();
         }
@@ -61,7 +61,7 @@ public class ChatController {
 
     @ApiIgnore
     @PostMapping("/append")
-    public String append(@RequestParam String rawMessage){
+    public String append(@RequestBody String rawMessage){
         System.out.println("forward append: " + rawMessage);
         return receiveRawData(rawMessage);
     }

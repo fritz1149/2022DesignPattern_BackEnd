@@ -98,21 +98,4 @@ public class UserService{
         user.setUserPwdEncoded(null);
         return user;
     }
-
-    public List<User> getUserByName(String name){
-        Assert.notNull(name, "name null");
-        return userMapper.getUserByName(name);
-    }
-
-    public List<User> getStrangerByName(String name, Long userId){
-        Assert.notNull(name, "name null");
-        Assert.notNull(userId, "userId null");
-        return userMapper.getNonContactByName(name, userId);
-    }
-
-    public List<User> getContactByName(String name, Long userId){
-        Assert.notNull(name, "name null");
-        Assert.notNull(userId, "userId null");
-        return userMapper.getContactByName(name, userId);
-    }
 }

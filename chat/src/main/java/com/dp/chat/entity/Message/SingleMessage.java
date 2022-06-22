@@ -1,7 +1,5 @@
 package com.dp.chat.entity.Message;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.dp.chat.service.DistributeService;
 import com.dp.common.Name;
 

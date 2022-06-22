@@ -32,3 +32,9 @@ spring:
         max-connection-idle-time: 3600000 #空闲一个小时清理一下
         socket-keep-alive: true
         min-connection-per-host: 1
+
+logging:
+  file:
+    name: chat.log
+  level:
+    '*' : WARN

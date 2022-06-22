@@ -98,6 +98,7 @@ public class AppendService {
             return append(pairName, message);
         }
 
+        System.out.println("append" + JSONObject.toJSONString(message));
         State result = colonyDao.forwardRequest(holderAddress, JSONObject.toJSONString(message), "/append");
 
         if(result == State.ERROR){

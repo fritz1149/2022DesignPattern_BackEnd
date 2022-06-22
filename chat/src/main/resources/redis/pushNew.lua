@@ -2,7 +2,7 @@ local len = tonumber(redis.call("llen", KEYS[1]))
 local serverLatestId = tonumber(redis.call("get", KEYS[3]))
 local clientLatestId = tonumber(KEYS[4])
 local ret = {"false"}
-if clientLatestId == serverLatestId and len == 0
+if clientLatestId >= serverLatestId and len == 0
 then
     redis.call("set", KEYS[2], "consistent")
 elseif clientLatestId == serverLatestId then

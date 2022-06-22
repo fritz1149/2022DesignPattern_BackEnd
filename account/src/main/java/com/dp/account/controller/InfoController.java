@@ -2,7 +2,6 @@ package com.dp.account.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.dp.account.entity.User;
 import com.dp.account.service.UserService;
 import com.dp.account.service.searchService.AllSearch;
 import com.dp.account.service.searchService.ContactSearch;

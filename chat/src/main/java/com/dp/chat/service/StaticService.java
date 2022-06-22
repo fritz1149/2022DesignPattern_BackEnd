@@ -1,22 +1,15 @@
 package com.dp.chat.service;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dp.chat.dao.CacheDao;
 import com.dp.chat.dao.ContactMapper;
 import com.dp.chat.dao.GroupMapper;
 import com.dp.chat.dao.StorageDao;
-import com.dp.chat.entity.ChatTemplate;
 import com.dp.chat.entity.Group;
 import com.dp.chat.entity.Message.MessageFactory;
 import com.dp.chat.entity.UserInfo;
 import com.dp.common.Name;
-import com.dp.common.dao.ExistMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.*;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 

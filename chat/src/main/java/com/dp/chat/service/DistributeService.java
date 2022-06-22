@@ -98,6 +98,9 @@ public class DistributeService {
         JSONArray res = cacheDao.checkPush(listName, stateName, lastId, clientLatestId);
 
         String hint = res.get(0).toString();
+        if(clientLatestId < 0L)
+            clientLatestId = 0L;
+
         if(hint.equals("true")) {
             JSONArray messages = res.getJSONArray(2);
             parseRaw(messages);
@@ -115,6 +118,8 @@ public class DistributeService {
         Long userId = ack.getUserId();
         Long groupId = ack.getTargetId();
         Long clientLatestId = ack.getClientLatestId();
+        if(clientLatestId < -1L)
+            clientLatestId = -1L;
         JSONArray messages = cacheDao.shouldPush(groupId, clientLatestId);
         parseRaw(messages);
         socketDao.sendGroupMessages(userId, clientLatestId, groupId, messages);
